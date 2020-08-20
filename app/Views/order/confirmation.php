@@ -32,9 +32,9 @@
 
                         Your order number is: <span class="color-theme"> <?= $order['order_num']; ?></span> <br>
                         <?php $deliver_at = new DateTime($order['placed_at']);
-                        $deliver_at = $deliver_at->modify('+ 30 minute')->format('H:i A');
+
                         ?>
-                        Kindly, pick up your order at: <span class="color-theme"> <?= ' ' . $deliver_at; ?></span></br></br>
+                        Kindly, pick up your order at: <span class="color-theme"> <?= ' ' . $deliver_at->format('H:i A'); ?></span></br></br>
 
                         Thank you, </br>
                         Olive Mediterranean Grill </p>
@@ -46,7 +46,7 @@
                     <hr>
                     <ul class="list-unstyled mb-0 col-6">
                         <li><span>Order # :</span><span><?= $order['order_num']; ?></span></li>
-                        <li><span>Pick up at :</span><span><?= $deliver_at; ?></span></li>
+                        <li><span>Pick up at :</span><span><?= $deliver_at->format('H:i A'); ?></span></li>
                         <li><span>Restaurant :</span><span>North Eve</span></li>
                         <li><span>Subtotal :</span><span>$ <?= $order['order_subtotal']; ?></span></li>
                         <li><span>Sales Tax (11.5%) :</span><span>$ <?= $order['order_tax']; ?></span></li>

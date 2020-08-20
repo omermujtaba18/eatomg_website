@@ -12,8 +12,8 @@ class OrderModel extends Model
     protected $allowedFields = [
         'order_num',
         'cus_id',
-        'order_placed_time',
-        'order_delivery_time',
+        'placed_at',
+        'deliver_at',
         'order_discount',
         'order_subtotal',
         'order_tax',
@@ -22,6 +22,7 @@ class OrderModel extends Model
         'order_type',
         'order_instruct',
         'rest_id',
-        'order_complete'
+        'is_complete',
+        'order_payment_type'
     ];
 }

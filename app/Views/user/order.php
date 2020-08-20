@@ -13,18 +13,14 @@
         <div class="row col-md-6">
             <?php
             $placed_at = new DateTime($order['placed_at']);
-            $placed_at = $placed_at->format('H:i A');
+            $deliver_at = new DateTime($order['deliver_at']);
             ?>
             <div class="col-md-4 font-weight-bold">Order at:</div>
-            <div class="col-md-8 text-right"><?= $placed_at; ?></div>
+            <div class="col-md-8 text-right"><?= $placed_at->format('H:i A'); ?></div>
         </div>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Pickup at:</div>
-            <?php
-            $deliver_at = new DateTime($order['placed_at']);
-            $deliver_at = $deliver_at->modify('+ 30 minute')->format('H:i A');
-            ?>
-            <div class="col-md-8 text-right"><?= $deliver_at; ?></div>
+            <div class="col-md-8 text-right"><?= $deliver_at->format('H:i A'); ?></div>
         </div>
 
         <div class="row col-md-6">
