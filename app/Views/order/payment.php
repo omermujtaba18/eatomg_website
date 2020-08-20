@@ -56,7 +56,7 @@
                         <div>
                             <h5 class="mb-2">Customer Information</h5>
                             <?php if (empty($_SESSION['cus_id'])) : ?>
-                                <span class="color-light">Alread have an account?</span> <a href="/user/login" class="color-theme">Sign in to get an exciting discount!</a>
+                                <span class="color-light">Already have an account?</span> <a href="/user/login" class="color-theme">Sign in to get an exciting discount!</a>
                             <?php endif; ?>
                             <hr>
                             <div class="row">
@@ -68,15 +68,15 @@
                                 <input type="hidden" name="cus_id" class="form-control" placeholder="John Doe" value="<?= !empty($_SESSION['cus_id']) ? $_SESSION['cus_id'] : ''; ?>" required>
                                 <div class="col-md-10">
                                     <label>Name</label>
-                                    <input type="text" name="name" class="form-control" placeholder="John Doe" required>
+                                    <input type="text" name="name" class="form-control" value="<?= !empty($_SESSION['cus_name']) ? $_SESSION['cus_name'] : '' ?>" placeholder="John Doe" required>
                                 </div>
                                 <div class="col-md-10">
                                     <label>Email address</label>
-                                    <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+                                    <input type="email" name="email" class="form-control" value="<?= !empty($_SESSION['cus_email']) ? $_SESSION['cus_email'] : '' ?>" placeholder="john@example.com" required>
                                 </div>
                                 <div class="col-md-10">
                                     <label>Phone</label>
-                                    <input type="number" name="phone" class="form-control" placeholder="123 123 1234" required>
+                                    <input type="number" name="phone" class="form-control" value="<?= !empty($_SESSION['cus_phone']) ? $_SESSION['cus_phone'] : '' ?>" placeholder="123 123 1234" required>
                                 </div>
                             </div>
                         </div>

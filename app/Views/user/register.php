@@ -28,7 +28,7 @@
                 <div class="cart__shiping">
                     <h5 class="text-center">CREATE AN ACCOUNT</h5>
                     <hr>
-                    <form class="row" method="post" action="">
+                    <form class="row" method="post" action="/register">
                         <?php if (isset($msg)) { ?>
                             <div class=" col-md-10 offset-lg-1 alert alert-danger" role="alert" id="err">
                                 <?= $msg; ?>
@@ -54,7 +54,7 @@
                             <button type="submit" class="btn btn__primary btn-block">CREATE ACCOUNT</button>
                         </div>
                         <div class="col-md-10 offset-lg-1">
-                            <span class="color-light">Already have an account?</span> <a href="/user/login" class="color-theme">Sign In!</a>
+                            <span class="color-light">Already have an account?</span> <a href="/login" class="color-theme">Sign In!</a>
                         </div>
                     </form>
                 </div><!-- /.cart__shiping -->

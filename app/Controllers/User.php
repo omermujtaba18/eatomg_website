@@ -10,49 +10,58 @@ use DateTime;
 
 class User extends Controller
 {
-    var $db = null;
+    var $db, $session, $order, $customer = null;
 
     public function __construct()
     {
         $this->db = db_connect();
+        $this->session = session();
+        $this->order = new OrderModel();
+        $this->customer = new CustomerModel();
     }
 
     public function register()
     {
-        $session = session();
-        $data['cus_id'] = $session->has('cus_id') ? $session->cus_id : NULL;
-
+        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = strtolower('register');
         $data['header'] = "header-layout2";
 
-        $customerModel = new CustomerModel();
-        $err = ['msg' => 'Error: Email already exists, Try a different email!'];
+        if ($this->request->getPost()) {
+            $err = ['msg' => 'Error: Email already exists, Try a different email!'];
+            // Check if email already exists with us
+            $customer = $this->customer->where('cus_email', $this->request->getPost('email'))->first();
 
-        if ($this->request->getVar('name') && $this->request->getVar('email') && $this->request->getVar('password')) {
-            $user = $customerModel->where([
-                'cus_email' => $this->request->getVar('email'),
-            ])->first();
+            if (empty($customer)) {
+                $cus_id = $this->customer->insert([
+                    'cus_name' => $this->request->getPost('name'),
+                    'cus_email' => $this->request->getPost('email'),
+                    'cus_password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+                    'has_register' => 1
+                ]);
+                $customer = $this->customer->find($cus_id);
+                unset($customer['cus_password']);
+                $this->session->set($customer);
 
-            if (is_array($user)) {
+                return redirect()->to('/user/order-history');
+            }
+
+            if (!empty($customer['has_register'])) {
                 echo view('templates/header', $data);
                 echo view('user/register', $err);
                 echo view('templates/footer', $data);
                 return;
             }
 
-            $customerModel->save([
-                'cus_name' => $this->request->getVar('name'),
-                'cus_email' => $this->request->getVar('email'),
-                'cus_password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+            $this->customer->save([
+                'cus_id' => $customer['cus_id'],
+                'cus_password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+                'has_register' => 1
             ]);
-
-            $newUser = $customerModel->where(['cus_email' => $this->request->getVar('email')])->first();
-            unset($newUser["cus_password"]);
-            $session->set($newUser);
+            unset($customer['cus_password']);
+            $this->session->set($customer);
 
             return redirect()->to('/user/order-history');
         }
-
 
         echo view('templates/header', $data);
         echo view('user/register', $data);
@@ -61,30 +70,36 @@ class User extends Controller
 
     public function login()
     {
-        $session = session();
-        $data['cus_id'] = $session->has('cus_id') ? $session->cus_id : NULL;
-
+        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = strtolower('login');
         $data['header'] = "header-layout2";
 
-        $customerModel = new CustomerModel();
         $err = ['msg' => 'Error: Invalid Email/Password. Try again!'];
+        $err2 = ['msg' => 'Error: Account does not exisits. Register now!'];
+
 
         if ($this->request->getVar('email') && $this->request->getVar('password')) {
-            $user = $customerModel->where([
+            $customer = $this->customer->where([
                 'cus_email' => $this->request->getVar('email'),
             ])->first();
 
-            if (!password_verify($this->request->getVar('password'), $user['cus_password'])) {
+            if (empty($customer)) {
+                echo view('templates/header', $data);
+                echo view('user/login', $err2);
+                echo view('templates/footer', $data);
+                return;
+            }
+
+            if (!password_verify($this->request->getVar('password'), $customer['cus_password'])) {
                 echo view('templates/header', $data);
                 echo view('user/login', $err);
                 echo view('templates/footer', $data);
                 return;
             }
 
-            $newUser = $customerModel->where(['cus_email' => $this->request->getVar('email')])->first();
-            unset($newUser["cus_password"]);
-            $session->set($newUser);
+            $customer = $this->customer->where(['cus_email' => $this->request->getVar('email')])->first();
+            unset($customer["cus_password"]);
+            $this->session->set($customer);
 
             return redirect()->to('/user/order-history');
         }
@@ -94,46 +109,31 @@ class User extends Controller
         echo view('templates/footer', $data);
     }
 
-    public function profile()
-    {
-        $data['title'] = ucfirst('profile');
-        $data['header'] = "header-layout2";
-        echo view('templates/header', $data);
-        echo view('user/profile', $data);
-        echo view('templates/footer', $data);
-    }
-
     public function account()
     {
-        $session = session();
         $data['title'] = ucfirst('account');
         $data['header'] = "header-layout2";
-        $data['cus_id'] = $session->has('cus_id') ? $session->cus_id : NULL;
-        $customerModel = new CustomerModel();
+        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
+
 
         if ($this->request->getPost()) {
-
-            $date = new DateTime();
-            $dob = $this->request->getPost('dob');
-            $date->setDate($dob[2], $dob[1], $dob[0]);
-            $dob = $date->format('Y-m-d');
-
             $newData = [
+                'cus_id' => $this->session->cus_id,
                 'cus_name' => $this->request->getPost('name'),
                 'cus_email' => $this->request->getPost('email'),
                 'cus_address' => $this->request->getPost('address'),
                 'cus_city' => $this->request->getPost('city'),
                 'cus_state' => $this->request->getPost('state'),
                 'cus_zip' => $this->request->getPost('zip'),
-                'cus_dob' => $dob,
+                'cus_dob' => $this->request->getPost('dob'),
                 'cus_phone' => $this->request->getPost('phone')
             ];
-            $customerModel->update($session->cus_id, $newData);
+            $this->customer->save($newData);
 
             $data['msg'] = 'Account updated!';
         }
 
-        $customer = $customerModel->find($session->cus_id);
+        $customer = $this->customer->find($this->session->cus_id);
         $data['customer'] = $customer;
         $data['content'] = view('user/account', $data);
         echo view('templates/header', $data);
@@ -141,16 +141,16 @@ class User extends Controller
         echo view('templates/footer', $data);
     }
 
-    public function orderHistory()
+    public function order_history()
     {
-        $session = session();
-        $data['cus_id'] = $session->has('cus_id') ? $session->cus_id : NULL;
-
-        $orderModel = new OrderModel();
+        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = ucwords('order history');
         $data['header'] = "header-layout2";
-        $data['orderOpen'] = $orderModel->where(["cus_id" => $session->cus_id, "order_complete" => 0])->findAll();
-        $data['orderPast'] = $orderModel->where(["cus_id" => $session->cus_id, "order_complete" => 1])->findAll();
+
+        $data['orderOpen'] = $this->order->where(["cus_id" => $this->session->cus_id, "is_complete" => 0])->findAll();
+        rsort($data['orderOpen']);
+        $data['orderPast'] = $this->order->where(["cus_id" => $this->session->cus_id, "is_complete" => 1])->findAll();
+        rsort($data['orderPast']);
 
         $data['content'] = view('user/order_history', $data);
         echo view('templates/header', $data);
@@ -158,26 +158,23 @@ class User extends Controller
         echo view('templates/footer', $data);
     }
 
-    public function changePassword()
+    public function change_password()
     {
-        $session = session();
-        $data['cus_id'] = $session->has('cus_id') ? $session->cus_id : NULL;
-
+        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = ucwords('change password');
         $data['header'] = "header-layout2";
 
-        $customerModel = new CustomerModel();
         if ($this->request->getPost()) {
-            $oldUser = $customerModel->find($session->cus_id);
+            $oldUser = $this->customer->find($this->session->cus_id);
             if (password_verify($this->request->getPost('oldpass'), $oldUser['cus_password'])) {
                 $newData = [
+                    'cus_id' => $this->session->cus_id,
                     'cus_password' => password_hash($this->request->getPost('newpass'), PASSWORD_DEFAULT),
                 ];
-                $customerModel->update($session->cus_id, $newData);
+                $this->customer->save($newData);
                 $data['msg'] = 'Password updated!';
             } else {
-                echo "not verify";
-                $data['err'] = 'Invalid password!';
+                $data['err'] = 'Invalid old password!';
             }
         }
 
@@ -200,37 +197,37 @@ class User extends Controller
 
     public function logout()
     {
-        $session = session();
-        $session->destroy();
-
+        $this->session->destroy();
         return redirect()->to('/user/login');
     }
 
-    public function order($val)
+    public function get_order($order_num)
     {
-        $info = $this->db->table('orders');
-        $info->select('*');
-        $info->where('order_num', $val);
-        $info->join('restaurants', 'restaurants.rest_id = orders.rest_id');
-        $queryInfo = $info->get();
 
-        $orderItems = $this->db->table('order_items');
-        $orderItems->select('*');
-        $orderItems->where('order_num', $val);
-        $orderItems->join('items', 'items.item_id = order_items.item_id');
-        $queryOrderItems = $orderItems->get();
+        $order = $this->db->table('orders');
+        $order->select('*');
+        $order->where('order_num', $order_num);
+        $order->join('restaurants', 'restaurants.rest_id = orders.rest_id');
+        $order = $order->get();
+        $order = $order->getResult('array')[0];
+
+        $items = $this->db->table('order_items');
+        $items->select('*');
+        $items->where('order_id', $order['order_id']);
+        $items->join('items', 'items.item_id = order_items.item_id');
+        $items = $items->get();
+        $items = $items->getResult('array');
 
         $data = [
-            'info' => (array) $queryInfo->getResult()[0],
-            'items' => (array) $queryOrderItems->getResult()
+            'order' => $order,
+            'items' => $items,
         ];
-
-        $data['title'] = ucwords('Order Details');
-        $data['header'] = "header-layout2";
         $data['content'] = view('user/order', $data);
 
-        $session = session();
-        $data['cus_id'] = $session->has('cus_id') ? $session->cus_id : NULL;
+        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
+        $data['title'] = ucwords('Order Details');
+        $data['header'] = "header-layout2";
+
         echo view('templates/header', $data);
         echo view('user/profile', $data);
         echo view('templates/footer', $data);

@@ -12,7 +12,7 @@ class LoginFilter implements FilterInterface
     {
         $session = session();
         if (!$session->cus_email) {
-            return redirect()->to('/user/login');
+            return redirect()->to('/login');
         }
     }
 

@@ -28,7 +28,7 @@
                 <div class="cart__shiping">
                     <h5 class="text-center">SIGN IN</h5>
                     <hr>
-                    <form class="row" method="post" action="">
+                    <form class="row" method="post" action="/login">
                         <?php if (isset($msg)) { ?>
                             <div class=" col-md-10 offset-lg-1 alert alert-danger" role="alert" id="err">
                                 <?= $msg; ?>
@@ -50,7 +50,7 @@
                             <button type="submit" class="btn btn__primary btn-block">SIGN IN</button>
                         </div>
                         <div class="col-md-10 offset-lg-1">
-                            <span class="color-light">Dont't have an account?</span> <a href="/user/register" class="color-theme">Register now!</a>
+                            <span class="color-light">Dont't have an account?</span> <a href="/register" class="color-theme">Register now!</a>
                         </div>
                     </form>
                 </div><!-- /.cart__shiping -->

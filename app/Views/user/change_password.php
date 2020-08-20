@@ -29,15 +29,15 @@
                 <?php } ?>
                 <div class="col-md-12">
                     <label>Old Password</label>
-                    <input type="text" name="oldpass" class="form-control" placeholder="********">
+                    <input type="password" name="oldpass" class="form-control" placeholder="********">
                 </div>
                 <div class="col-md-12">
                     <label>New Passoword</label>
-                    <input type="text" name="newpass" class="form-control" placeholder="********">
+                    <input type="password" name="newpass" class="form-control" placeholder="********">
                 </div>
                 <div class="col-md-12">
                     <label>Confirm Password</label>
-                    <input type="text" name="newpassc" class="form-control" placeholder="********">
+                    <input type="password" name="newpassc" class="form-control" placeholder="********">
                 </div>
                 <div class="col-md-6 pt-3 pb-3">
                     <button type="submit" class="btn btn__primary btn-block">UPDATE ACCOUNT</button>

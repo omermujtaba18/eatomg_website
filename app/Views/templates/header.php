@@ -62,11 +62,8 @@
                     </div><!-- /.navbar-collapse -->
                     <div class="navbar-actions-wrap">
                         <div class="navbar-actions d-flex align-items-center">
-                            <!-- <a href="#" class="navbar__action-btn search-popup-trigger"><i class="fa fa-search"></i></a> -->
-                            <!-- <a href="reservation.html" class="navbar__action-btn navbar__action-btn-reserve btn btn__primary">Order
-                Now</a> -->
                             <?php if (is_null($cus_id)) : ?>
-                                <a href="/user/login" class="btn btn__white btn__bordered" style="height: 37px; min-width: 124px; line-height: 35px; border-color:#83bb43; color:#83bb43;">LOGIN</a>
+                                <a href="/login" class="btn btn__white btn__bordered" style="height: 37px; min-width: 124px; line-height: 35px; border-color:#83bb43; color:#83bb43;">LOGIN</a>
                             <?php endif; ?>
                             <a href="/order-now" class="navbar__action-btn navbar__action-btn-reserve btn btn__primary">ORDER
                                 NOW</a>

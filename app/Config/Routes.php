@@ -32,13 +32,13 @@ $routes->setAutoRoute(false);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Pages::view');
-$routes->match(['get', 'post'], 'user/register', 'User::register');
-$routes->match(['get', 'post'], 'user/login', 'User::login');
-$routes->match(['get', 'post'], '/user/change-password', 'User::changePassword');
+$routes->match(['get', 'post'], '/register', 'User::register');
+$routes->match(['get', 'post'], '/login', 'User::login');
+$routes->match(['get', 'post'], '/user/change-password', 'User::change_password');
 $routes->match(['get', 'post'], '/user/account', 'User::account');
-$routes->get('/user/order-history', 'User::orderHistory');
+$routes->get('/user/order-history', 'User::order_history');
 $routes->get('/user/(:alpha)', 'User::$1');
-$routes->get('/user/order/(:num)', 'User::order/$1');
+$routes->get('/user/order/(:num)', 'User::get_order/$1');
 
 
 //Order Routes

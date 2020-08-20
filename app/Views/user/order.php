@@ -4,37 +4,45 @@
         <hr>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Order#:</div>
-            <div class="col-md-8 text-right">#<a href="../order/<?= $info['order_num']; ?>" class="color-theme"><?= $info['order_num']; ?></a></div>
+            <div class="col-md-8 text-right">#<a href="../order/<?= $order['order_num']; ?>" class="color-theme"><?= $order['order_num']; ?></a></div>
         </div>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Status:</div>
-            <div class="col-md-8 text-right"><?= $info['order_status']; ?></div>
+            <div class="col-md-8 text-right"><?= $order['order_status']; ?></div>
         </div>
         <div class="row col-md-6">
-            <div class="col-md-4 font-weight-bold">Ordered on:</div>
-            <div class="col-md-8 text-right"><?= $info['order_placed_time']; ?></div>
+            <?php
+            $placed_at = new DateTime($order['placed_at']);
+            $placed_at = $placed_at->format('H:i A');
+            ?>
+            <div class="col-md-4 font-weight-bold">Order at:</div>
+            <div class="col-md-8 text-right"><?= $placed_at; ?></div>
         </div>
         <div class="row col-md-6">
-            <div class="col-md-4 font-weight-bold">Delivered At:</div>
-            <div class="col-md-8 text-right"><?= $info['order_delivery_time']; ?></div>
+            <div class="col-md-4 font-weight-bold">Pickup at:</div>
+            <?php
+            $deliver_at = new DateTime($order['placed_at']);
+            $deliver_at = $deliver_at->modify('+ 30 minute')->format('H:i A');
+            ?>
+            <div class="col-md-8 text-right"><?= $deliver_at; ?></div>
         </div>
 
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Order Total:</div>
-            <div class="col-md-8 text-right">$<?= $info['order_total']; ?></div>
+            <div class="col-md-8 text-right">$<?= $order['order_total']; ?></div>
         </div>
         <div class="row col-md-6 pb-3">
             <div class="col-md-4 font-weight-bold">Restaurant:</div>
-            <div class="col-md-8 text-right"><?= $info['rest_name']; ?></div>
+            <div class="col-md-8 text-right"><?= $order['rest_name']; ?></div>
         </div>
 
         <span class="color-theme">Order Details</span>
         <hr>
         <?php foreach ($items as $item) : ?>
             <div class="row col-md-6">
-                <div class="col-md-2 font-weight-bold"><?= $item->order_item_quantity ?> X</div>
-                <div class="col-md-8 font-weight-bold"><?= $item->item_name ?></div>
-                <div class="col-md-2 font-weight-bold"><?= '$' . $item->order_item_price ?></div>
+                <div class="col-md-2 font-weight-bold"><?= $item['order_item_quantity']; ?> X</div>
+                <div class="col-md-8 font-weight-bold"><?= $item['item_name']; ?></div>
+                <div class="col-md-2 font-weight-bold"><?= '$' . $item['item_price']; ?></div>
             </div>
             <?php if (!empty($item->modifier)) : ?>
                 <?php $modifier = explode(",", $item->modifier);
@@ -62,7 +70,7 @@
         <hr>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Subtotal</div>
-            <div class="col-md-8 text-right">$<?= $info['order_subtotal']; ?></div>
+            <div class="col-md-8 text-right">$<?= $order['order_subtotal']; ?></div>
         </div>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Promotions</div>
@@ -70,11 +78,11 @@
         </div>
         <div class="row col-md-6 mb-1">
             <div class="col-md-4 font-weight-bold">Tax</div>
-            <div class="col-md-8 text-right border-bottom pb-2">$<?= $info['order_tax']; ?></div>
+            <div class="col-md-8 text-right border-bottom pb-2">$<?= $order['order_tax']; ?></div>
         </div>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Total</div>
-            <div class="col-md-8 text-right">$<?= $info['order_total']; ?></div>
+            <div class="col-md-8 text-right">$<?= $order['order_total']; ?></div>
             <hr>
         </div>
 

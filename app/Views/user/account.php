@@ -101,11 +101,7 @@
                 </div>
                 <div class="col-md-6">
                     <label>Date of Birth (DD/MM/YYYY)</label>
-                    <div class="form-inline">
-                        <input type="number" name="dob[]" class="col-md-3 form-control mr-1" value="<?= isset($customer['cus_dob']) ? substr($customer['cus_dob'], -2) : ''; ?>" placeholder="DAY" size="2">
-                        <input type="number" name="dob[]" class="col-md-3 form-control mr-1" value="<?= isset($customer['cus_dob']) ? substr($customer['cus_dob'], -5, 2) : ''; ?>" placeholder="MONTH" size="2">
-                        <input type="number" name="dob[]" class="col-md-5 form-control" value="<?= isset($customer['cus_dob']) ? substr($customer['cus_dob'], 0, 4) : ''; ?>" placeholder="YEAR" size="4">
-                    </div>
+                    <input type="text" name="dob" class="form-control mr-1" value="<?= isset($customer['cus_dob']) ? $customer['cus_dob'] : ''; ?>" placeholder="DD/MM/YYYY" maxlength="10" onkeyup="this.value=this.value.replace(/^(\d\d)(\d)$/g,'$1/$2').replace(/^(\d\d\/\d\d)(\d+)$/g,'$1/$2').replace(/[^\d\/]/g,'')">
                 </div>
                 <div class="col-md-6">
                     <label>Phone</label>

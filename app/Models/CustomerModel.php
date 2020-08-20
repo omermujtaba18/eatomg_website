@@ -19,6 +19,7 @@ class CustomerModel extends Model
         'cus_state',
         'cus_country',
         'cus_zip',
-        'cus_dob'
+        'cus_dob',
+        'has_register'
     ];
 }
