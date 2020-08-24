@@ -20,6 +20,7 @@ class CustomerModel extends Model
         'cus_country',
         'cus_zip',
         'cus_dob',
-        'has_register'
+        'has_register',
+        'token'
     ];
 }

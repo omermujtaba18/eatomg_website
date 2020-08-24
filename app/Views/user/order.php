@@ -16,11 +16,11 @@
             $deliver_at = new DateTime($order['deliver_at']);
             ?>
             <div class="col-md-4 font-weight-bold">Order at:</div>
-            <div class="col-md-8 text-right"><?= $placed_at->format('H:i A'); ?></div>
+            <div class="col-md-8 text-right"><?= $placed_at->format('h:i A'); ?></div>
         </div>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Pickup at:</div>
-            <div class="col-md-8 text-right"><?= $deliver_at->format('H:i A'); ?></div>
+            <div class="col-md-8 text-right"><?= $deliver_at->format('h:i A'); ?></div>
         </div>
 
         <div class="row col-md-6">
@@ -70,10 +70,10 @@
         </div>
         <div class="row col-md-6">
             <div class="col-md-4 font-weight-bold">Promotions</div>
-            <div class="col-md-8 text-right">- $ <?= empty($info['order_discount']) ? '00.00' : $info['order_discount']; ?></div>
+            <div class="col-md-8 text-right">- $ <?= empty($order['order_discount']) ? '00.00' : $order['order_discount']; ?></div>
         </div>
         <div class="row col-md-6 mb-1">
-            <div class="col-md-4 font-weight-bold">Tax</div>
+            <div class="col-md-4 font-weight-bold">Tax (11.5%)</div>
             <div class="col-md-8 text-right border-bottom pb-2">$<?= $order['order_tax']; ?></div>
         </div>
         <div class="row col-md-6">

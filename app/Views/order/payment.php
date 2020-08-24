@@ -121,8 +121,8 @@
                         <hr>
                         <ul class="list-unstyled mb-0 col-6">
                             <li><span>Subtotal :</span><span>$ <?= $subtotal; ?></span></li>
-                            <?php if (isset($promo)) : ?>
-                                <li><span>Promotions :</span><span>- $ <?= $promo;  ?></span></li>
+                            <?php if (isset($discount)) : ?>
+                                <li><span>Promotions :</span><span>- $ <?= $discount;  ?></span></li>
                             <?php
                             endif; ?>
                             <li><span>Sales Tax (11.5%) :</span><span>$ <?= $tax; ?></span></li>

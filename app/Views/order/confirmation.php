@@ -27,14 +27,14 @@
                     <h5>Your order has been placed! </h5>
                     <hr>
                     <p>
-                        Dear customer,</br>
-                        Your order has been placed at Olive Mediterranean Grill, Noth Eve.<br></br>
+                        Dear <?= ucwords(strtolower($customer['cus_name'])); ?>,</br>
+                        Your order has been placed at Olive Mediterranean Grill, <?= $rest['rest_name']; ?>.<br></br>
 
                         Your order number is: <span class="color-theme"> <?= $order['order_num']; ?></span> <br>
                         <?php $deliver_at = new DateTime($order['placed_at']);
 
                         ?>
-                        Kindly, pick up your order at: <span class="color-theme"> <?= ' ' . $deliver_at->format('H:i A'); ?></span></br></br>
+                        Kindly, pick up your order at: <span class="color-theme"> <?= ' ' . $deliver_at->format('h:i A'); ?></span></br></br>
 
                         Thank you, </br>
                         Olive Mediterranean Grill </p>
@@ -46,9 +46,10 @@
                     <hr>
                     <ul class="list-unstyled mb-0 col-6">
                         <li><span>Order # :</span><span><?= $order['order_num']; ?></span></li>
-                        <li><span>Pick up at :</span><span><?= $deliver_at->format('H:i A'); ?></span></li>
-                        <li><span>Restaurant :</span><span>North Eve</span></li>
+                        <li><span>Pick up at :</span><span><?= $deliver_at->format('h:i A'); ?></span></li>
+                        <li><span>Restaurant :</span><span><?= $rest['rest_name']; ?></span></li>
                         <li><span>Subtotal :</span><span>$ <?= $order['order_subtotal']; ?></span></li>
+                        <li><span>Discount :</span><span>- $ <?= $order['order_discount']; ?></span></li>
                         <li><span>Sales Tax (11.5%) :</span><span>$ <?= $order['order_tax']; ?></span></li>
                         <li><span>Order Total :</span><span>$ <?= $order['order_total']; ?></span></li>
                     </ul>

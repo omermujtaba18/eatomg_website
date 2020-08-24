@@ -11,7 +11,7 @@
                             <div class="menu-item">
                                 <h4 class="menu__item-title"><?= $item['item_name']; ?></h4>
                                 <span class="menu__item-price"><?= "$" . $item['item_price']; ?></span><br>
-                                <span class="menu__item-desc"><?= empty($item['item_desc']) ? "Description" : $item['item_desc']; ?></span>
+                                <span class="menu__item-desc"><?= empty($item['item_desc']) ? "-" : $item['item_desc']; ?></span>
                                 <a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>" class="menu__item-cart navbar__action-btn">
                                     <i class="fa fa-cart-plus fa-2x" aria-hidden="true"></i>
                                 </a>

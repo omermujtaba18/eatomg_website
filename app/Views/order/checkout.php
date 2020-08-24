@@ -22,6 +22,9 @@
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12">
                 <div class="cart-table table-responsive">
+
+                    <form method="get" id="code"></form>
+
                     <form method="post">
                         <table class="table table-bordered">
                             <thead>
@@ -112,8 +115,8 @@
 
                                                 <div>
                                                     <div class="d-flex flex-wrap mb-30">
-                                                        <input type="text" class="form-control mb-10 mr-10" name="promo" placeholder="Coupon Code">
-                                                        <button class="btn btn__primary mb-10">Apply
+                                                        <input type="text" class="form-control mb-10 mr-10" form="code" name="promo" placeholder="Coupon Code">
+                                                        <button class="btn btn__primary mb-10" form="code">Apply
                                                             Coupon</button>
                                                     </div>
                                                     <a class="btn btn__secondary mr-10" href="/order-now">Add Items</a>
@@ -158,8 +161,12 @@
         });
         subtotal = total.toFixed(2);
         promo = 0;
-        <?php if (isset($_SESSION['promo'])) { ?>
-            promo = (subtotal * 0.25).toFixed(2);
+        <?php if (isset($_SESSION['cart']['cart_promo'])) {
+            if ($_SESSION['cart']['cart_promo']['type'] == 'percent') { ?>
+                promo = (subtotal * <?= $_SESSION['cart']['cart_promo']['amount'] ?>).toFixed(2);
+            <?php } else { ?>
+                promo = (<?= $_SESSION['cart']['cart_promo']['amount'] ?>).toFixed(2);
+            <?php } ?>
             $('#promo').text('- $ ' + promo);
         <?php } ?>
         tax = ((total.toFixed(2) * 11.5) / 100).toFixed(2);

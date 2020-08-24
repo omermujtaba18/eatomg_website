@@ -15,6 +15,7 @@ use App\Models\ModifierGroupModel;
 use App\Models\OrderItemModel;
 use App\Models\OrderItemModifierModel;
 use App\Models\OrderItemAddonModel;
+use App\Models\PromotionModel;
 
 use App\Models\RestaurantModel;
 use App\ThirdParty\CreateOrder;
@@ -22,13 +23,15 @@ use App\ThirdParty\GetOrder;
 use CodeIgniter\Controller;
 use CodeIgniter\I18n\Time;
 use DateTime;
+use DateTimeZone;
 
 class Order extends Controller
 {
     var $db, $category, $item, $modifier,
         $order, $customer, $addon, $session, $categories,
         $itemmodifier, $itemAddon, $modifierGroup, $addonGroup,
-        $order_item, $order_item_modifier, $order_item_addon;
+        $order_item, $order_item_modifier, $order_item_addon,
+        $promotion, $restaurant;
 
     /* 
     Cart Object
@@ -81,6 +84,8 @@ class Order extends Controller
         $this->order_item = new OrderItemModel();
         $this->order_item_modifier = new OrderItemModifierModel();
         $this->order_item_addon = new OrderItemAddonModel();
+        $this->promotion = new PromotionModel();
+        $this->restaurant = new RestaurantModel();
         $this->session = session();
     }
 
@@ -242,8 +247,19 @@ class Order extends Controller
     // Route /cart
     public function cart()
     {
-        if ($this->request->getPost('promo')) {
-            $this->session->set('promo', '0.25');
+        if ($this->request->getGet('promo')) {
+            $promo_code = $this->request->getGet('promo');
+            $promotion = $this->promotion->where([
+                'promo_code' => $promo_code,
+                'is_active' => 1
+            ])->first();
+
+            if (!empty($promotion)) {
+                $cart = $this->session->get('cart');
+                $cart['cart_promo']['type'] = $promotion['promo_type'];
+                $cart['cart_promo']['amount'] = $promotion['promo_amount'];
+                $this->session->set('cart', $cart);
+            }
         }
 
         if (!$this->session->has('cart')) {
@@ -263,9 +279,21 @@ class Order extends Controller
             }
             $cart['instruct'] = $this->request->getPost('instruct');
             $cart['items'] = $cart_item;
-            $cart['cart_subtotal'] = $cart_subtotal;
+            $cart['cart_subtotal'] = round($cart_subtotal, 2);
+            if (!empty($cart['cart_promo']['type'])) {
+                if ($cart['cart_promo']['type'] == 'percent') {
+                    $cart['cart_discount'] = round($cart_subtotal * $cart['cart_promo']['amount'], 2);
+                } else {
+                    $cart['cart_discount'] = round($cart['cart_promo']['amount'], 2);
+                }
+            }
             $cart['cart_tax'] = round(($cart_subtotal * 11.5 / 100), 2);
             $cart['cart_total'] = $cart_subtotal + $cart['cart_tax'];
+            if (!empty($cart['cart_discount'])) {
+                $cart['cart_total'] -= $cart['cart_discount'];
+            }
+            $cart['cart_total'] = round($cart['cart_total'], 2);
+
             $this->session->set('cart', $cart);
             return redirect()->to('/checkout/payment');
         }
@@ -351,18 +379,21 @@ class Order extends Controller
         echo "Return";
     }
 
-    public function create_order($cart, $cus_id, $rest_id, $payment_id)
+    public function create_order($cart, $cus_id, $rest_id, $payment_id, $type = null)
     {
         $order_num = round(microtime(true) * 1000);
+        $placed_at = new DateTime();
 
         $order_data = [
             'order_num' => $order_num,
             'cus_id' => $cus_id,
-            'order_discount' => 0,
+            'order_discount' => !empty($cart['cart_discount']) ? $cart['cart_discount'] : 0,
             'order_subtotal' => $cart['cart_subtotal'],
             'order_tax' => $cart['cart_tax'],
             'order_total' => $cart['cart_total'],
-            'order_type' => '',
+            'order_type' => $type,
+            'placed_at' => $placed_at->format('Y-m-d H:i:s'),
+            'deliver_at' => $placed_at->modify('+30 minutes')->format('Y-m-d H:i:s'),
             'order_instruct' => $cart['instruct'],
             'rest_id' => $rest_id,
         ];
@@ -417,7 +448,7 @@ class Order extends Controller
             }
 
             $rest_id = $this->request->getPost('rest_id');
-            $order_id = $this->create_order($this->session->cart, $cus_id, $rest_id, 0);
+            $order_id = $this->create_order($this->session->cart, $cus_id, $rest_id, 0, 'website');
             $this->session->remove('cart');
             $this->session->set('order_id', $order_id);
 
@@ -428,14 +459,7 @@ class Order extends Controller
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
         $data['title'] = 'Payment';
 
-        if ($this->session->has('promo')) {
-            $promo = round($this->session->get('subtotal') * $this->session->get('promo'), 2);
-            $total = $this->session->get('subtotal') - $promo + $this->session->get('tax');
-            $this->session->set('promo', $promo);
-            $this->session->set('total', $total);
-            $data['promo'] = $promo;
-        }
-
+        $data['discount'] = !empty($this->session->get('cart')['cart_discount']) ? $this->session->get('cart')['cart_discount'] : 0;
         $data['subtotal'] = $this->session->get('cart')['cart_subtotal'];
         $data['tax'] = $this->session->get('cart')['cart_tax'];
         $data['total'] = $this->session->get('cart')['cart_total'];
@@ -451,6 +475,8 @@ class Order extends Controller
         if ($this->session->has('order_id')) {
             $id = $this->session->get('order_id');
             $data['order'] = $this->order->find($id);
+            $data['rest'] = $this->restaurant->find($data['order']['rest_id']);
+            $data['customer'] = $this->customer->find($data['order']['cus_id']);
         }
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;

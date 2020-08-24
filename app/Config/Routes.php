@@ -40,6 +40,7 @@ $routes->get('/user/order-history', 'User::order_history');
 $routes->get('/user/(:alpha)', 'User::$1');
 $routes->get('/user/order/(:num)', 'User::get_order/$1');
 
+$routes->match(['get', 'post', 'put', 'delete'], '/api/(:any)', 'Api::$1');
 
 //Order Routes
 
@@ -56,7 +57,6 @@ $routes->match(['get', 'post'], '/checkout/return', 'Order::return_paypal');
 $routes->match(['get', 'post'], '/checkout/confirmation', 'Order::confirmation');
 $routes->get('/empty_cart', 'Order::empty_cart');
 $routes->get('(:any)', 'Pages::view/$1');
-
 
 /**
  * --------------------------------------------------------------------
