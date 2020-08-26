@@ -40,7 +40,7 @@ $routes->get('/user/order-history', 'User::order_history');
 $routes->get('/user/(:alpha)', 'User::$1');
 $routes->get('/user/order/(:num)', 'User::get_order/$1');
 
-$routes->match(['get', 'post', 'put', 'delete'], '/api/(:any)', 'Api::$1');
+$routes->match(['get', 'post'], '/api/(:any)', 'Api::$1');
 
 //Order Routes
 

@@ -13,6 +13,7 @@ class Filters extends BaseConfig
 		'toolbar'  => \CodeIgniter\Filters\DebugToolbar::class,
 		'honeypot' => \CodeIgniter\Filters\Honeypot::class,
 		'sessionCheck' => \App\Filters\LoginFilter::class,
+
 	];
 
 	// Always applied before every request
@@ -36,6 +37,6 @@ class Filters extends BaseConfig
 	// that they should run on, like:
 	//    'isLoggedIn' => ['before' => ['account/*', 'profiles/*']],
 	public $filters = [
-		'sessionCheck' => ['before' => ['user/profile', 'user/account', 'user/logout', 'user/order-history', 'user/change-password']]
+		'sessionCheck' => ['before' => ['user/profile', 'user/account', 'user/logout', 'user/order-history', 'user/change-password']],
 	];
 }

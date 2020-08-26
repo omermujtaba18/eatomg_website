@@ -203,7 +203,6 @@ class User extends Controller
 
     public function get_order($order_num)
     {
-
         $order = $this->db->table('orders');
         $order->select('*');
         $order->where('order_num', $order_num);
