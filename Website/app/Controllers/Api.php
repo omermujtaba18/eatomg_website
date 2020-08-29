@@ -321,7 +321,7 @@ class Api extends Controller
 
             $order = $this->db->table('orders');
             $orders = $order->select('*')->where(['is_complete' => 0, 'cus_id' => $this->user['cus_id']])
-                ->join('restaurants', 'restaurants.rest_id = orders.rest_id')->get();
+                ->join('restaurants', 'restaurants.rest_id = orders.rest_id')->orderBy('order_id', 'DESC')->get();
             $orders = $orders->getResult('array');
 
             $active_order = [];
@@ -334,24 +334,24 @@ class Api extends Controller
                 array_push($active_order, $ao);
             }
 
-            $orders = $order->select('*')->where(['is_complete' => 1, 'cus_id' => $this->request->getGet('cus_id')])
-                ->join('restaurants', 'restaurants.rest_id = orders.rest_id')->get();
+            $orders = $order->select('*')->where(['is_complete' => 1, 'cus_id' => $this->user['cus_id']])
+                ->join('restaurants', 'restaurants.rest_id = orders.rest_id')->orderBy('order_id', 'DESC')->get();
             $orders = $orders->getResult('array');
 
             $past_order = [];
             foreach ($orders as $po) {
                 $order_item = $this->db->table('order_items');
                 $item = $order_item->select('order_item_id,items.item_id,order_item_quantity,item_name,item_price')
-                    ->where('order_id', $ao['order_id'])
+                    ->where('order_id', $po['order_id'])
                     ->join('items', 'items.item_id = order_items.item_id')->get();
                 $po['items'] = $item->getResult('array');
                 array_push($past_order, $po);
             }
 
             $active['title'] = "Active Orders";
-            $active['orders'] = $active_order;
+            $active['data'] = $active_order;
             $past['title'] = "Past Orders";
-            $past['orders'] = $past_order;
+            $past['data'] = $past_order;
 
             $history = [];
             array_push($history, $active);
