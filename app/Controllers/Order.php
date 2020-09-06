@@ -16,14 +16,15 @@ use App\Models\OrderItemModel;
 use App\Models\OrderItemModifierModel;
 use App\Models\OrderItemAddonModel;
 use App\Models\PromotionModel;
-
 use App\Models\RestaurantModel;
-use App\ThirdParty\CreateOrder;
-use App\ThirdParty\GetOrder;
 use CodeIgniter\Controller;
 use CodeIgniter\I18n\Time;
 use DateTime;
-use DateTimeZone;
+
+use \PayPalCheckoutSdk\Core\PayPalHttpClient;
+use \PayPalCheckoutSdk\Core\SandboxEnvironment;
+use \PayPalCheckoutSdk\Orders\OrdersCreateRequest;
+use \PayPalHttp\HttpException;
 
 class Order extends Controller
 {
@@ -37,33 +38,37 @@ class Order extends Controller
     Cart Object
         {
             items:[
-                [0]: [
-                        item_id,
-                        item_name,
-                        item_price,
-                        item_quantity,
-                        item_total,
-                        modifier: [
-                            [0]: [
-                                modifier_group_id,
-                                modifier_group_instruct
-                                modifier_id
-                                modifier_item,
-                                modifier_price
+                    [0]: [
+                            item_id,
+                            item_name,
+                            item_price,
+                            item_quantity,
+                            item_total,
+                            modifier: [
+                                [0]: [
+                                    modifier_group_id,
+                                    modifier_group_instruct
+                                    modifier_id
+                                    modifier_item,
+                                    modifier_price
+                                ]
+                            ],
+                            addon:[
+                                [0]: [
+                                    addon_group_id,
+                                    addon_group_instruct
+                                    addon_id,
+                                    addon_item,
+                                    addon_price
+                                ]
                             ]
-                        ],
-                        addon:[
-                            [0]: [
-                                addon_group_id,
-                                addon_group_instruct
-                                addon_id,
-                                addon_item,
-                                addon_price
-                            ]
-                        ]
-                    ], 
-                ]
-            ]
+                        ], 
+                    ]
+                ],
+                instruct: "",
+                cart_subtotal: ",
+                cart_tax:"",
+                cart_total:"",
         }
     */
 
@@ -295,7 +300,7 @@ class Order extends Controller
             $cart['cart_total'] = round($cart['cart_total'], 2);
 
             $this->session->set('cart', $cart);
-            return redirect()->to('/checkout/payment');
+            return redirect()->to('/checkout');
         }
 
 
@@ -309,136 +314,57 @@ class Order extends Controller
         echo view('templates/footer', $data);
     }
 
-    // TODO: Paypal
-    public function pay_by_payapl()
-    {
-        $orderNum = round(microtime(true) * 1000);
-        $body = json_decode($this->request->getBody());
-        // $getOrder = new GetOrder();
-        // $order = $getOrder->getOrder($body->orderID);
-
-        $cus_id = $this->session->has('cus_id') ? $this->session->get('cus_id') : -1;
-
-        if ($cus_id == -1) {
-            $customerData = [
-                'cus_name' => $body->cus_name,
-                'cus_email' => $body->cus_email,
-                'cus_phone' => $body->cus_phone,
-            ];
-            $cus_id = $this->customerModel->insert($customerData, true);
-        }
-
-        $data = [
-            'order_num' => $orderNum,
-            'cus_id'    => $cus_id,
-            'order_placed_time' => new Time('now', 'America/Chicago', 'en_US'),
-            'order_delivery_time' => new Time('now +30 minute', 'America/Chicago', 'en_US'),
-            'order_discount' => $this->session->has('promo') ? $this->session->get('promo') : '',
-            'order_subtotal' => $this->session->get('subtotal'),
-            'order_tax' => $this->session->get('tax'),
-            'order_total' => $this->session->get('total'),
-            'order_status' => 'Pending',
-            'order_type' => 'TAKEOUT',
-            'order_instruct' => '',
-            'rest_id' => $body->restID,
-            'order_complete' => '0',
-            'order_payment_type' => 'PAYPAL'
-        ];
-
-        $order = $this->orderModel->insert($data, true);
-        $this->session->set('order_id', $order);
-
-        $cart = $this->session->get('cart')['cart'];
-
-        foreach ($cart as $item) {
-
-            $item_id = $item['item_id'];
-            $item_qty = $item['item_qty'];
-            $item_modifier = $item['modifier'];
-            $item_cur = $this->itemModel->find($item_id);
-            $item_price = $item_cur['item_price'];
-            $item_addon = array();
-
-            if (!empty($item['addon'])) {
-                foreach ($item['addon'] as $a) {
-                    $item_price += $a['addon_price'];
-                    array_push($item_addon, $a['selected']);
-                }
-            }
-
-            $item_addon = implode(",", $item_addon);
-
-            $this->db->query("INSERT INTO `eatomg`.`order_items` (`order_num`, `item_id`, `order_item_quantity`, `modifier`, `addon`,`order_item_price`) VALUES ('$orderNum', '$item_id' , '$item_qty' , '$item_modifier' , '$item_addon','$item_price');");
-        }
-
-        return $this->response->setStatusCode(200);
-    }
 
     public function return_paypal()
     {
         echo "Return";
     }
 
-    public function create_order($cart, $cus_id, $rest_id, $payment_id, $type = null)
+    public function payByPaypal()
     {
+        $cart = $this->session->cart;
+        $clientId = getEnv('CLIENT_ID');
+        $clientSecret = getEnv('CLIENT_SECRET');
         $order_num = round(microtime(true) * 1000);
-        $placed_at = new DateTime();
 
-        $order_data = [
-            'order_num' => $order_num,
-            'cus_id' => $cus_id,
-            'order_discount' => !empty($cart['cart_discount']) ? $cart['cart_discount'] : 0,
-            'order_subtotal' => $cart['cart_subtotal'],
-            'order_tax' => $cart['cart_tax'],
-            'order_total' => $cart['cart_total'],
-            'order_type' => $type,
-            'placed_at' => $placed_at->format('Y-m-d H:i:s'),
-            'deliver_at' => $placed_at->modify('+30 minutes')->format('Y-m-d H:i:s'),
-            'order_instruct' => $cart['instruct'],
-            'rest_id' => $rest_id,
+        $environment = new SandboxEnvironment($clientId, $clientSecret);
+        $client = new PayPalHttpClient($environment);
+        $total =  number_format($cart['cart_total'], 2, '.', '');
+
+        $request = new OrdersCreateRequest();
+        $request->prefer('return=representation');
+        $request->body = [
+            "intent" => "CAPTURE",
+            "purchase_units" => [[
+                'reference_id' => $order_num,
+                "amount" => [
+                    "value" => $total,
+                    "currency_code" => "USD"
+                ]
+            ]],
+            "application_context" => [
+                "cancel_url" => base_url() . "/checkout",
+                "return_url" => base_url() . "/checkout"
+            ]
         ];
-        $order_id = $this->order->insert($order_data);
 
-        foreach ($cart['items'] as $item) {
-
-            $order_item_id = $this->order_item->insert([
-                'order_id' => $order_id,
-                'item_id' => $item['item_id'],
-                'order_item_quantity' => $item['item_quantity']
-            ]);
-
-            if (!empty($item['modifier'])) {
-                foreach ($item['modifier'] as $modifier) {
-                    $this->order_item_modifier->insert([
-                        'order_item_id' => $order_item_id,
-                        'modifier_group_id' => $modifier['modifier_group_id'],
-                        'modifier_id' => $modifier['modifier_id']
-                    ]);
-                }
-            }
-            if (!empty($item['addon'])) {
-                foreach ($item['addon'] as $addon) {
-                    $this->order_item_addon->insert([
-                        'order_item_id' => $order_item_id,
-                        'addon_group_id' => $addon['addon_group_id'],
-                        'addon_id' => $addon['addon_id']
-                    ]);
-                }
-            }
+        try {
+            $response = $client->execute($request);
+            return json_encode($response);
+        } catch (HttpException $ex) {
+            echo $ex->statusCode;
+            print_r($ex->getMessage());
         }
-        return $order_id;
     }
 
-    // Route: /checkout/payment
-    public function payment()
+
+    // Route: /checkout
+    public function checkout()
     {
         if ($this->request->getPost()) {
+            $order_num = round(microtime(true) * 1000);
 
-            //TODO: Perform transaction on card, waiting for APIs
-
-            // Create Order if transaction successful
             $cus_id = $this->request->getPost('cus_id');
-
             if (empty($cus_id)) {
                 $cus_id = $this->customer->insert([
                     'cus_name' => $this->request->getPost('name'),
@@ -446,13 +372,33 @@ class Order extends Controller
                     'cus_phone' => $this->request->getPost('phone'),
                 ]);
             }
-
             $rest_id = $this->request->getPost('rest_id');
-            $order_id = $this->create_order($this->session->cart, $cus_id, $rest_id, 0, 'website');
-            $this->session->remove('cart');
-            $this->session->set('order_id', $order_id);
+            $cart = $this->session->cart;
 
-            return redirect()->to('/checkout/confirmation');
+            $card = [
+                "cardNumber" => str_replace(' ', '', $this->request->getPost('card_num')),
+                "expirationDate" => str_replace('/', '-', $this->request->getPost('exp_date')),
+                "cardCode" => $this->request->getPost('cvv')
+            ];
+
+            if ($this->request->getPost('paypal') != '0') {
+                $order_num = $this->request->getPost('paypal');
+                $order_id = $this->order->createOrder($cart, $cus_id, $rest_id, 0, 'website', 'PayPal', $order_num);
+                $this->session->remove('cart');
+                $this->session->set('order_id', $order_id);
+                return redirect()->to('/checkout/confirmation');
+            }
+
+            $response = $this->order->chargeCard($rest_id, $cart['cart_total'], $card, $cus_id, $order_num);
+
+            if ($response[0]) {
+                $order_id = $this->order->createOrder($cart, $cus_id, $rest_id, 0, 'website', 'card', $order_num);
+                $this->session->remove('cart');
+                $this->session->set('order_id', $order_id);
+                return redirect()->to('/checkout/confirmation');
+            };
+
+            $data['error'] = $response[1];
         }
 
         $data['header'] = "header-layout2";

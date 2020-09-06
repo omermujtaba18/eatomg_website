@@ -1,8 +1,8 @@
 {
-    "name": "codeigniter4/codeigniter4",
+    "name": "olive/eatomg",
     "type": "project",
-    "description": "The CodeIgniter framework v4",
-    "homepage": "https://codeigniter.com",
+    "description": "Olive Mediterranean Grill",
+    "homepage": "https://eatomg.com",
     "license": "MIT",
     "require": {
         "php": ">=7.2",
@@ -31,10 +31,5 @@
             "CodeIgniter\\ComposerScripts::postUpdate",
             "bash admin/setup.sh"
         ]
-    },
-    "support": {
-        "forum": "http://forum.codeigniter.com/",
-        "source": "https://github.com/codeigniter4/CodeIgniter4",
-        "slack": "https://codeigniterchat.slack.com"
     }
 }

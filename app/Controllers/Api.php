@@ -369,5 +369,66 @@ class Api extends Controller
         if ($check_token) {
             return $check_token;
         }
+        // if ($this->request->getMethod() == 'post') {
+        //     $order_num = round(microtime(true) * 1000);
+        //     $cus_id = $this->request->getPost('cus_id');
+        //     $rest_id = $this->request->getPost('rest_id');
+        //     $cart = $this->session->cart;
+        //     $card = [
+        //         "cardNumber" => str_replace(' ', '', $this->request->getPost('card_num')),
+        //         "expirationDate" => str_replace('/', '-', $this->request->getPost('exp_date')),
+        //         "cardCode" => $this->request->getPost('cvv')
+        //     ];
+
+        //     $response = $this->order->chargeCard($rest_id, $cart['cart_total'], $card, $cus_id, $order_num);
+
+        //     if ($response[0]) {
+        //         $order_id = $this->order->createOrder($cart, $cus_id, $rest_id, 0, 'website', 'card', $order_num);
+        //         $this->session->remove('cart');
+        //         $this->session->set('order_id', $order_id);
+        //         return redirect()->to('/checkout/confirmation');
+        //     };
+
+        //     return $this->fail($response[1], 400);
+        // }
+        return $this->failNotFound();
     }
+
+    /* 
+    Cart Object
+        {
+            items:[
+                    [0]: [
+                            item_id,
+                            item_name,
+                            item_price,
+                            item_quantity,
+                            item_total,
+                            modifier: [
+                                [0]: [
+                                    modifier_group_id,
+                                    modifier_group_instruct
+                                    modifier_id
+                                    modifier_item,
+                                    modifier_price
+                                ]
+                            ],
+                            addon:[
+                                [0]: [
+                                    addon_group_id,
+                                    addon_group_instruct
+                                    addon_id,
+                                    addon_item,
+                                    addon_price
+                                ]
+                            ]
+                        ], 
+                    ]
+                ],
+                instruct: "",
+                cart_subtotal: ",
+                cart_tax:"",
+                cart_total:"",
+        }
+    */
 }
