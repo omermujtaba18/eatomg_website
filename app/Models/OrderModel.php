@@ -8,6 +8,8 @@ use App\Models\OrderItemModel;
 use App\Models\OrderItemAddonModel;
 use App\Models\OrderItemModifierModel;
 use DateTime;
+use ErrorException;
+use Stripe\Stripe;
 
 class OrderModel extends Model
 {
@@ -28,7 +30,8 @@ class OrderModel extends Model
         'order_instruct',
         'rest_id',
         'is_complete',
-        'order_payment_type'
+        'order_payment_type',
+        'payment_id'
     ];
 
     var $restaurant, $order_item, $order_item_modifier, $order_item_addon = null;
@@ -42,72 +45,7 @@ class OrderModel extends Model
         $this->order_item_modifier = new OrderItemModifierModel();
     }
 
-
-    public function chargeCard($rest_id, $amount, $card, $customerId, $orderId)
-    {
-
-        $restaurant = $this->restaurant->where('rest_id', $rest_id)->first();
-
-        // 5424 0000 0000 0015
-        // 2020/12
-        // 999
-        $auth = [
-            "name" => $restaurant['rest_api_id'],
-            "transactionKey" => $restaurant['rest_api_key']
-        ];
-
-        $ch = curl_init();
-        $data = ["createTransactionRequest" => [
-            "merchantAuthentication" => $auth,
-            "refId" => $orderId,
-            "transactionRequest" => [
-                "transactionType" => "authCaptureTransaction",
-                "amount" => $amount,
-                "payment" => [
-                    "creditCard" => $card
-                ],
-                "order" => [
-                    "invoiceNumber" => $orderId
-                ],
-                "poNumber" =>  $orderId,
-                "customer" => [
-                    "id" => $customerId
-                ],
-                "transactionSettings" => [
-                    "setting" => [
-                        "settingName" => "duplicateWindow",
-                        "settingValue" => "0"
-                    ]
-                ],
-            ]
-        ]];
-
-        curl_setopt($ch, CURLOPT_FORBID_REUSE, TRUE);
-        curl_setopt($ch, CURLOPT_FRESH_CONNECT, TRUE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_URL, getEnv('CARD_API_URL'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $result = curl_exec($ch);
-
-        function remove_utf8_bom($text)
-        {
-            $bom = pack('H*', 'EFBBBF');
-            $text = preg_replace("/^$bom/", '', $text);
-            return $text;
-        }
-
-        $json = remove_utf8_bom($result);
-        $response = json_decode($json, TRUE);
-        curl_close($ch);
-        return $response['messages']['resultCode'] == "Ok" ?
-            [1, $response['transactionResponse']['transId']] :
-            [0, $response['transactionResponse']['errors'][0]['errorText']];
-    }
-
-
-    public function createOrder($cart, $cus_id, $rest_id, $payment_id, $type = null, $pay_type, $order_num)
+    public function createOrder($cart, $cus_id, $payment_id, $order_type, $payment_method, $order_num)
     {
         $placed_at = new DateTime();
         $order_data = [
@@ -117,12 +55,13 @@ class OrderModel extends Model
             'order_subtotal' => $cart['cart_subtotal'],
             'order_tax' => $cart['cart_tax'],
             'order_total' => $cart['cart_total'],
-            'order_type' => $type,
+            'order_type' => $order_type,
             'placed_at' => $placed_at->format('Y-m-d H:i:s'),
             'deliver_at' => $placed_at->modify('+30 minutes')->format('Y-m-d H:i:s'),
             'order_instruct' => $cart['instruct'],
-            'rest_id' => $rest_id,
-            'order_payment_type' => $pay_type
+            'rest_id' => getEnv('REST_ID'),
+            'order_payment_type' => $payment_method,
+            'payment_id' => $payment_id
         ];
         $order_id = $this->insert($order_data);
 
@@ -131,7 +70,8 @@ class OrderModel extends Model
             $order_item_id = $this->order_item->insert([
                 'order_id' => $order_id,
                 'item_id' => $item['item_id'],
-                'order_item_quantity' => $item['item_quantity']
+                'order_item_quantity' => $item['item_quantity'],
+                'order_item_note' => $item['item_instruct']
             ]);
 
             if (!empty($item['modifier'])) {

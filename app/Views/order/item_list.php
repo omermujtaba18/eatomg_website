@@ -14,7 +14,7 @@
                                         <img src="<?= !empty($item['item_pic']) ? $item['item_pic'] : base_url('../images/favicon/OMG_Logo-Final_Icon-Black.png'); ?>" width="80" height="80">
                                     </div>
                                     <div class="col-10">
-                                        <h4 class="menu__item-title"><?= $item['item_name']; ?></h4>
+                                        <h4 class="menu__item-title"><a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>"><?= $item['item_name']; ?></a></h4>
                                         <span class="menu__item-price"><?= "$" . $item['item_price']; ?></span><br>
                                         <span class="menu__item-desc"><?= empty($item['item_desc']) ? "-" : $item['item_desc']; ?></span>
                                         <a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>" class="menu__item-cart navbar__action-btn">

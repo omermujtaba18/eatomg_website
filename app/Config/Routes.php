@@ -31,7 +31,7 @@ $routes->setAutoRoute(false);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Pages::view');
+$routes->get('/', 'Order::index/sandwiches');
 $routes->match(['get', 'post'], '/register', 'User::register');
 $routes->match(['get', 'post'], '/login', 'User::login');
 $routes->match(['get', 'post'], '/user/change-password', 'User::change_password');
@@ -40,12 +40,8 @@ $routes->get('/user/order-history', 'User::order_history');
 $routes->get('/user/(:alpha)', 'User::$1');
 $routes->get('/user/order/(:num)', 'User::get_order/$1');
 
-$routes->match(['get', 'post'], '/api/(:any)', 'Api::$1');
-
 //Order Routes
-
-$routes->get('/takeout-catering', 'Order::select_type');
-
+// $routes->get('/select-restauarant', 'Order::select_restauarant');
 $routes->match(['get', 'post'], '/order-now/(:any)/(:num)', 'Order::item_by_id/$1/$2');
 $routes->get('/order-now', 'Order::index/sandwiches');
 $routes->get('/order-now/(:any)', 'Order::index/$1');
@@ -56,7 +52,6 @@ $routes->match(['get', 'post'], '/checkout/pay-paypal', 'Order::payByPaypal');
 $routes->match(['get', 'post'], '/checkout/return', 'Order::return_paypal');
 $routes->match(['get', 'post'], '/checkout/confirmation', 'Order::confirmation');
 $routes->get('/empty_cart', 'Order::empty_cart');
-$routes->get('(:any)', 'Pages::view/$1');
 
 /**
  * --------------------------------------------------------------------

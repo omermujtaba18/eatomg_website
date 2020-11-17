@@ -23,8 +23,13 @@ use DateTime;
 
 use \PayPalCheckoutSdk\Core\PayPalHttpClient;
 use \PayPalCheckoutSdk\Core\SandboxEnvironment;
+use \PayPalCheckoutSdk\Core\ProductionEnvironment;
 use \PayPalCheckoutSdk\Orders\OrdersCreateRequest;
 use \PayPalHttp\HttpException;
+
+define('PAYMENT_METHOD_PAYPAL', 'PAYPAL');
+define('PAYMENT_METHOD_CARD', 'CARD');
+define('ORDER_TYPE', 'WEBSITE');
 
 class Order extends Controller
 {
@@ -33,6 +38,8 @@ class Order extends Controller
         $itemmodifier, $itemAddon, $modifierGroup, $addonGroup,
         $order_item, $order_item_modifier, $order_item_addon,
         $promotion, $restaurant;
+
+
 
     /* 
     Cart Object
@@ -81,7 +88,7 @@ class Order extends Controller
         $this->order = new OrderModel();
         $this->customer = new CustomerModel();
         $this->addon = new AddOnModel();
-        $this->categories = $this->category->findAll();
+        $this->categories = $this->category->where(['rest_id' => getEnv('REST_ID'), 'is_show' => 1])->findAll();
         $this->itemmodifier = new ItemModifierModel();
         $this->itemAddon = new ItemAddonModel();
         $this->modifierGroup = new ModifierGroupModel();
@@ -101,17 +108,18 @@ class Order extends Controller
         $data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         /* List of all categories */
         $data["categories"] = $this->categories;
 
         /* First Category, if category_slug is not set */
-        $data['category'] = $this->category->first();
+        $data['category'] = $this->category->where('rest_id', getEnv('REST_ID'))->first();
         $data['items'] = $this->item->where(['category_id' => $data['category']['category_id']])->findAll();
 
         /* Check if category slug is set, and return that category items*/
         if (isset($category_slug)) {
-            $data['category'] = $this->category->where(['category_slug' => $category_slug])->findAll()[0];
+            $data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->findAll()[0];
             $data['items'] = $this->item->where(["category_id" => $data['category']['category_id']])->findAll();
         }
 
@@ -126,7 +134,7 @@ class Order extends Controller
         }
     }
 
-    public function add_to_cart($item, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
+    public function add_to_cart($item, $quantity, $instruct, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
     {
         if (!$this->session->has('cart')) {
             $cart['items'] = [];
@@ -136,9 +144,10 @@ class Order extends Controller
         $cart = $this->session->get('cart');
         $cart_item['item_id'] = $item['item_id'];
         $cart_item['item_name'] = $item['item_name'];
-        $cart_item['item_price'] = $item['item_price'];
-        $cart_item['item_total'] = $item['item_price'] + $modifier_price + $addon_price;
-        $cart_item['item_quantity'] = 1;
+        $cart_item['item_price'] = $item['item_price'] + $modifier_price + $addon_price;
+        $cart_item['item_total'] = $quantity * ($cart_item['item_price']);
+        $cart_item['item_quantity'] = intval($quantity);
+        $cart_item['item_instruct'] = $instruct;
         $cart_item['modifier'] = $modifier;
         $cart_item['addon'] = $addon;
 
@@ -197,7 +206,7 @@ class Order extends Controller
                 }
             }
             $item = $this->item->find($item_id);
-            $this->add_to_cart($item, $modifier_array, $modifier_price, $addon_array, $addon_price);
+            $this->add_to_cart($item, $this->request->getPost('quantity'), $this->request->getPost('instruction'), $modifier_array, $modifier_price, $addon_array, $addon_price);
             $this->session->set('message', '<strong>"' . $item['item_name'] . '"<strong> added to cart.');
             return redirect()->to('/order-now/' . $category_slug);
         }
@@ -206,12 +215,13 @@ class Order extends Controller
         $data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         /* List of all categories */
         $data["categories"] = $this->categories;
 
         /* Search category by slug and return all items */
-        $data['category'] = $this->category->where(['category_slug' => $category_slug])->first();
+        $data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->first();
         $data['title'] = $data['category']['category_name'];
 
         /* Get item by item_id */
@@ -222,13 +232,6 @@ class Order extends Controller
 
         /* Get all addons attached to the item */
         $item_addon = $this->itemAddon->where('item_id', $item_id)->findAll();
-
-        /* If not modifier or addon is attached to the item */
-        if (empty($item_modifier) && empty($item_addon)) {
-            $this->add_to_cart($data['item']);
-            $this->session->set('message', '<strong>"' . $data['item']['item_name'] . '"<strong> added to cart.');
-            return redirect()->to('/order-now/' . $category_slug);
-        }
 
         /* If modifier is attached to the item */
         if (!empty($item_modifier)) {
@@ -255,8 +258,9 @@ class Order extends Controller
         if ($this->request->getGet('promo')) {
             $promo_code = $this->request->getGet('promo');
             $promotion = $this->promotion->where([
-                'promo_code' => $promo_code,
-                'is_active' => 1
+                'promo_code' => trim($promo_code),
+                'is_active' => 1,
+                'rest_id' => getEnv('REST_ID')
             ])->first();
 
             if (!empty($promotion)) {
@@ -278,8 +282,7 @@ class Order extends Controller
 
             foreach ($cart_item as $key => $value) {
                 $item = $cart_item[$key];
-                $item['item_quantity'] = $this->request->getPost($key);
-                $cart_subtotal += ($item['item_quantity'] * $item['item_total']);
+                $cart_subtotal += ($item['item_quantity'] * $item['item_price']);
                 $cart_item[$key] = $item;
             }
             $cart['instruct'] = $this->request->getPost('instruct');
@@ -308,6 +311,7 @@ class Order extends Controller
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
         $data['title'] = 'Checkout';
         $data['cart'] = $this->session->get('cart');
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         echo view('templates/header', $data);
         echo view('order/checkout', $data);
@@ -327,7 +331,8 @@ class Order extends Controller
         $clientSecret = getEnv('CLIENT_SECRET');
         $order_num = round(microtime(true) * 1000);
 
-        $environment = new SandboxEnvironment($clientId, $clientSecret);
+        $environment = getEnv('CI_ENVIRONMENT') == 'development' ?
+            new SandboxEnvironment($clientId, $clientSecret) : new ProductionEnvironment($clientId, $clientSecret);
         $client = new PayPalHttpClient($environment);
         $total =  number_format($cart['cart_total'], 2, '.', '');
 
@@ -363,8 +368,8 @@ class Order extends Controller
     {
         if ($this->request->getPost()) {
             $order_num = round(microtime(true) * 1000);
-
-            $cus_id = $this->request->getPost('cus_id');
+            $payment_id = $this->request->getPost('card') ? $this->request->getPost('card') : $this->request->getPost('paypal');
+            $cus_id = $this->request->getPost('cus_id') ? $this->request->getPost('cus_id') : $this->customer->where(['cus_email' => $this->request->getPost('email')])->first()['cus_id'];
             if (empty($cus_id)) {
                 $cus_id = $this->customer->insert([
                     'cus_name' => $this->request->getPost('name'),
@@ -372,43 +377,43 @@ class Order extends Controller
                     'cus_phone' => $this->request->getPost('phone'),
                 ]);
             }
-            $rest_id = $this->request->getPost('rest_id');
             $cart = $this->session->cart;
-
-            $card = [
-                "cardNumber" => str_replace(' ', '', $this->request->getPost('card_num')),
-                "expirationDate" => str_replace('/', '-', $this->request->getPost('exp_date')),
-                "cardCode" => $this->request->getPost('cvv')
-            ];
 
             if ($this->request->getPost('paypal') != '0') {
                 $order_num = $this->request->getPost('paypal');
-                $order_id = $this->order->createOrder($cart, $cus_id, $rest_id, 0, 'website', 'PayPal', $order_num);
+                $order_id = $this->order->createOrder($cart, $cus_id, $payment_id, ORDER_TYPE, PAYMENT_METHOD_PAYPAL, $order_num);
                 $this->session->remove('cart');
                 $this->session->set('order_id', $order_id);
                 return redirect()->to('/checkout/confirmation');
             }
 
-            $response = $this->order->chargeCard($rest_id, $cart['cart_total'], $card, $cus_id, $order_num);
-
-            if ($response[0]) {
-                $order_id = $this->order->createOrder($cart, $cus_id, $rest_id, 0, 'website', 'card', $order_num);
-                $this->session->remove('cart');
-                $this->session->set('order_id', $order_id);
-                return redirect()->to('/checkout/confirmation');
-            };
-
-            $data['error'] = $response[1];
+            $order_id = $this->order->createOrder($cart, $cus_id, $payment_id, ORDER_TYPE, PAYMENT_METHOD_CARD, $order_num);
+            $this->session->remove('cart');
+            $this->session->set('order_id', $order_id);
+            return redirect()->to('/checkout/confirmation');
         }
 
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
         $data['title'] = 'Payment';
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         $data['discount'] = !empty($this->session->get('cart')['cart_discount']) ? $this->session->get('cart')['cart_discount'] : 0;
         $data['subtotal'] = $this->session->get('cart')['cart_subtotal'];
         $data['tax'] = $this->session->get('cart')['cart_tax'];
         $data['total'] = $this->session->get('cart')['cart_total'];
+
+        \Stripe\Stripe::setApiKey(getEnv('STRIPE_SECRET_KEY'));
+
+        $data['intent'] = \Stripe\PaymentIntent::create([
+            'payment_method_types' => ['card'],
+            'amount' => $data['total'] * 100,
+            'currency' => 'usd',
+            'application_fee_amount' => (round($data['total'] * 0.029 + 0.8, 2)) * 100,
+            'transfer_data' => [
+                'destination' => getEnv('STRIPE_REST_KEY'),
+            ]
+        ]);
 
         echo view('templates/header', $data);
         echo view('order/payment', $data);
@@ -427,19 +432,21 @@ class Order extends Controller
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
         $data['title'] = 'Payment';
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         echo view('templates/header', $data);
         echo view('order/confirmation', $data);
         echo view('templates/footer', $data);
     }
 
-    // Route: /takout-catering
-    public function select_type()
+    // Route: /select-restauarant
+    public function select_restauarant()
     {
         /* Header Data: Total Orders, Header Type, Customer ID(if login),  */
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
         $data['title'] = '';
+        $data['restaurant'] = $this->restaurant->findAll();
 
         echo view('templates/header', $data);
         echo view('order/order_type', $data);

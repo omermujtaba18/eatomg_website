@@ -11,6 +11,7 @@ class RestaurantModel extends Model
     protected $returnType     = 'array';
     protected $allowedFields = [
         'rest_name',
-        'rest_location'
+        'rest_location',
+        'rest_address'
     ];
 }

@@ -1,0 +1,105 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* .paycard.card-stripe * {
+    font-family: GillSans;
+} */
+
+.paycard.card-stripe .field {
+    padding: 12px 15px;
+    font-weight: 100;
+}
+
+.paycard.card-stripe .field.focus,
+.paycard.card-stripe .field:focus {
+    color: #424770;
+    background-color: #f6f9fc;
+}
+
+.paycard.card-stripe .field.invalid {
+    background-color: #fa755a;
+}
+
+.paycard.card-stripe .field.invalid.focus {
+    background-color: #f6f9fc;
+}
+
+.paycard.card-stripe .field.focus::-webkit-input-placeholder,
+.paycard.card-stripe .field:focus::-webkit-input-placeholder {
+    color: #cfd7df;
+}
+
+.paycard.card-stripe .field.focus::-moz-placeholder,
+.paycard.card-stripe .field:focus::-moz-placeholder {
+    color: #cfd7df;
+}
+
+.paycard.card-stripe .field.focus:-ms-input-placeholder,
+.paycard.card-stripe .field:focus:-ms-input-placeholder {
+    color: #cfd7df;
+}
+
+.paycard.card-stripe input,
+.paycard.card-stripe button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border-style: none;
+}
+
+.paycard.card-stripe input {
+    color: #fff;
+}
+
+.paycard.card-stripe input::-webkit-input-placeholder {
+    color: #9bacc8;
+}
+
+.paycard.card-stripe input::-moz-placeholder {
+    color: #9bacc8;
+}
+
+.paycard.card-stripe input:-ms-input-placeholder {
+    color: #9bacc8;
+}
+
+.paycard.card-stripe .error svg .base {
+    fill: #fa755a;
+}
+
+.paycard.card-stripe .error svg .glyph {
+    fill: #fff;
+}
+
+.paycard.card-stripe .error .message {
+    color: #fff;
+}
+
+.paycard.card-stripe .success .icon .border {
+    stroke: #fcd669;
+}
+
+.paycard.card-stripe .success .icon .checkmark {
+    stroke: #fff;
+}
+
+.paycard.card-stripe .success .title {
+    color: #fff;
+}
+
+.paycard.card-stripe .success .message {
+    color: #9cabc8;
+}
+
+.paycard.card-stripe .success .reset path {
+    fill: #fff;
+}

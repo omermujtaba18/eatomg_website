@@ -52,6 +52,7 @@
                                     $item_price = $items[$key]['item_price'];
                                     $item_total = $items[$key]['item_total'];
                                     $item_quantity = $items[$key]['item_quantity'];
+                                    $item_instruct = $items[$key]['item_instruct'];
                                     $item_modifier = $items[$key]['modifier'];
                                     $item_addon = $items[$key]['addon'];
                                 ?>
@@ -69,23 +70,15 @@
                                                         <span class="text-muted ml-2">+ <?= $addon['addon_item']; ?></span><br>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
+                                                <?php if (!empty($item_instruct)) : ?>
+                                                    Instructions: <span class="text-muted ml-2"><?= $item_instruct; ?></span><br>
+                                                <?php endif; ?>
                                             </div>
                                             <a href="/cart/remove/<?= $key; ?>"><i class="fa fa-close cart__product-remove"></i></a>
                                         </td>
-                                        <td class="cart__product-price">$ <?= $item_price; ?><br>
-                                            <?php if (!empty($item_modifier)) : ?>
-                                                <?php foreach ($item_modifier as $modifier) : ?>
-                                                    <span class="text-muted" style="font-weight: 400 !important;"><?= $modifier['modifier_price'] > 0 ? '+ $' . number_format($modifier['modifier_price'], "1", ".", "") : ''; ?></span><br>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                            <?php if (!empty($item_addon)) : ?>
-                                                <?php foreach ($item_addon as $addon) : ?>
-                                                    <span class="text-muted" style="font-weight: 400 !important;">+ $<?= $addon['addon_price'] > 0 ? number_format($addon['addon_price'], "1", ".", "") : ''; ?></span><br>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-
+                                        <td class="cart__product-price">$ <?= $item_price; ?>
                                         </td>
-                                        <td style="display:none;" class="cart__product-full-price"><?= $item_total; ?></td>
+                                        <td style="display:none;" class="cart__product-full-price"><?= $item_price; ?></td>
 
                                         <td class="cart__product-quantity">
                                             <div class="product-quantity">
@@ -119,7 +112,7 @@
                                                         <button class="btn btn__primary mb-10" form="code">Apply
                                                             Coupon</button>
                                                     </div>
-                                                    <a class="btn btn__secondary mr-10" href="/order-now">Add Items</a>
+                                                    <a class="btn btn__secondary mr-10" href="/order-now">Add More Items</a>
                                                     <button class="btn btn__primary float-right" type="submit">Proceed to Payment</button>
                                                 </div>
                                             </div><!-- /.col-lg-2  -->

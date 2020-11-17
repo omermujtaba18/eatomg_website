@@ -1,10 +1,20 @@
+<?php
+$buttonStyle = [
+    'navbar__action-btn-reserve btn btn__secondary',
+    'navbar__action-btn-reserve btn btn__primary'
+]
+
+?>
+
 <section id="page-title" class="page-title page-title-layout7">
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 col-md-6 col-lg-6">
-                <h1 class="pagetitle__heading color-dark">Order Now</h1>
+            <div class="col-sm-12 col-md-9 col-lg-9">
+                <h2 class="pagetitle__desc color-dark"><?= $restaurant['rest_name']; ?></h2>
+                <p><?= $restaurant['rest_address']; ?><br><?= $restaurant['rest_phone']; ?></p>
+                <!-- <a href="http://localhost:8085/choose_restaurant" class="pagetitle__desc color-theme">Change Restaurant</a> -->
             </div>
-            <div class="col-sm-12 col-md-6 col-lg-6">
+            <div class="col-sm-12 col-md-3 col-lg-3">
                 <div class="navbar-actions-wrap float-right">
                     <div class="navbar-actions d-flex align-items-center">
                         <a href="/cart" class="navbar__action-btn ">
@@ -45,7 +55,7 @@
                     <hr>
                     <?php foreach ($categories as $category) : ?>
                         <?php if ($category['category_id'] != 1) : ?>
-                            <a href="/order-now/<?= $category['category_slug']; ?>" class="color-theme <?= $title == $category['category_name'] ? 'font-weight-bolder' : '' ?> "><?= $category['category_name']; ?></a>
+                            <a href="/order-now/<?= $category['category_slug']; ?>" class="color-theme <?= $title == $category['category_name'] ? 'font-weight-bolder' : '' ?>"><?= $category['category_name']; ?></a>
                             <hr>
                         <?php endif; ?>
                     <?php endforeach; ?>

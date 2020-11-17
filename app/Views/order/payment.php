@@ -1,24 +1,17 @@
-<style>
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+<link rel="stylesheet" href="/css/loader.css">
+<link rel="stylesheet" href="/css/checkout.css">
+<script src="/js/loader.js"></script>
 
-    /* Firefox */
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-</style>
 <script src="https://www.paypal.com/sdk/js?client-id=ATE4yA5JUr6WkY0Q84F_naz0Q5JK0YOZgsO_B6cchIvoXmHNW3MKjc8TXeJ2kjVzmtdeZDJP1E391oAS&disable-funding=credit,card">
 </script>
+<script src="https://js.stripe.com/v3/"></script>
 
 <section id="page-title" class="page-title page-title-layout7">
     <div class="container">
         <div class="row">
             <div class="col-sm-12 col-md-6 col-lg-6">
                 <h1 class="pagetitle__heading color-dark">Checkout</h1>
-            </div><!-- /.col-lg-6 -->
+            </div>
             <div class="col-sm-12 col-md-6 col-lg-6">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb justify-content-end">
@@ -29,34 +22,20 @@
 
                     </ol>
                 </nav>
-            </div><!-- /.col-lg-6 -->
-        </div><!-- /.row -->
-    </div><!-- /.container -->
-</section><!-- /.page-title -->
-<form method="post" id="form_checkout">
-    <section class="shop shopping-cart pb-50" style="padding-top:50px !important;">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12 col-md-6 col-lg-6">
-                    <div class="cart__shiping">
-                        <h5 class="mb-1">Choose your pickup restuarant</h5>
-                        <hr>
-                        <div class="row mb-3">
-                            <div class="col-md-10">
-                                <label>Restuarant</label>
-                                <select class="form-control" id="rest" name="rest_id">
-                                    <option value="1">North Eve.</option>
-                                    <option value="2">Evanston</option>
-                                    <option value="3">West Illinois St</option>
-                                    <option value="4">Van Buren</option>
-                                </select>
-                            </div>
-                        </div>
-
+            </div>
+        </div>
+    </div>
+</section>
+<section class="shop shopping-cart pb-50" style="padding-top:50px !important;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-6">
+                <div class="cart__shiping">
+                    <form method="post" id="form_checkout" class="needs-validation" novalidate>
                         <div>
                             <h5 class="mb-2">Customer Information</h5>
                             <?php if (empty($_SESSION['cus_id'])) : ?>
-                                <span class="color-light">Already have an account?</span> <a href="/user/login" class="color-theme">Sign in to get an exciting discount!</a>
+                                <span class="color-light">Already have an account?</span> <a href="/user/login" class="color-theme">Sign in to get exciting discounts!</a>
                             <?php endif; ?>
                             <hr>
                             <div class="row">
@@ -68,119 +47,83 @@
                                 <input type="hidden" name="cus_id" class="form-control" placeholder="John Doe" value="<?= !empty($_SESSION['cus_id']) ? $_SESSION['cus_id'] : ''; ?>" required>
                                 <div class="col-md-10">
                                     <label>Name</label>
-                                    <input type="text" name="name" class="form-control" value="<?= !empty($_SESSION['cus_name']) ? $_SESSION['cus_name'] : '' ?>" placeholder="John Doe" required>
+                                    <input type="text" name="name" id="name" class="form-control" value="<?= !empty($_SESSION['cus_name']) ? $_SESSION['cus_name'] : '' ?>" required autofocus>
+                                    <div class="invalid-feedback" style="margin-bottom:20px">
+                                        Please enter your name.
+                                    </div>
                                 </div>
                                 <div class="col-md-10">
                                     <label>Email address</label>
-                                    <input type="email" name="email" class="form-control" value="<?= !empty($_SESSION['cus_email']) ? $_SESSION['cus_email'] : '' ?>" placeholder="john@example.com" required>
+                                    <input type="email" name="email" id="email" class="form-control" value="<?= !empty($_SESSION['cus_email']) ? $_SESSION['cus_email'] : '' ?>" required>
+                                    <div class="invalid-feedback" style="margin-bottom:20px">
+                                        Please enter your email address.
+                                    </div>
                                 </div>
                                 <div class="col-md-10">
                                     <label>Phone</label>
-                                    <input type="number" name="phone" class="form-control" value="<?= !empty($_SESSION['cus_phone']) ? $_SESSION['cus_phone'] : '' ?>" placeholder="123 123 1234" required>
+                                    <input type="text" id="phone" name="phone" pattern="\d*" class="form-control" value="<?= !empty($_SESSION['cus_phone']) ? $_SESSION['cus_phone'] : '' ?>" maxlength="10" required placeholder="1231231234">
+                                    <div class="invalid-feedback" style="margin-bottom:20px">
+                                        Please enter your phone number.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <h5 class="mb-2 mt-3">Payment Information</h5>
-                        <hr>
-                        <div class="row">
-                            <?php if (isset($error)) { ?>
-                                <div class="col-md-10 alert alert-danger">
-                                    <?= $error; ?>
-                                </div>
-                            <?php } ?>
                             <input type="hidden" name="paypal" id="paypal" value="0">
-                            <div class="col-md-10">
-                                <label>Credit Card Number</label>
-                                <input type="text" name="card_num" class="form-control" placeholder="1234 1234 1234 1234" id="card_num" maxlength="19" type="number">
-                            </div>
-                            <div class="col-md-5">
-                                <label>Expiry Date (YYYY/MM)</label>
-                                <input type="text" name="exp_date" class="form-control" placeholder="YYYY/MM" id="exp_date" maxlength="7">
-                            </div>
-                            <div class="col-md-5">
-                                <label>CVV</label>
-                                <input type="text" name="cvv" class="form-control" placeholder="123" maxlength="3" type="number">
-                            </div>
-                            <div class="col-10">
-                                <button class="btn btn__primary btn-block" type="submit">Pay with card</button>
-                            </div>
-                            <div class="col-10">
-                                <h5 class="mt-4 text-center col-12">OR</h5>
-                                <div id="paypal-button-container"></div>
-                            </div>
+                            <input type="hidden" name="card" id="card" value="0">
+
+                        </div>
+                    </form>
+                    <h5 class="mb-2 mt-3">Payment Information</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-10 alert alert-danger" id="error" style="display: none">
+                        </div>
+                        <div class="cell paycard card-stripe" id="example-3" style="width:100%">
+                            <form id="card-form">
+                                <div class="col-md-10">
+                                    <label>Credit Card Number</label>
+                                    <div id="card-number" class="form-control field"></div>
+                                </div>
+                                <div class="row col">
+                                    <div class="col-md-5">
+                                        <label>Expiry Date</label>
+                                        <div id="card-expiry" class="form-control field"></div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label>CVC</label>
+                                        <div id="card-cvc" class="form-control field"></div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <button type="submit" class="btn btn__primary btn-block" data-secret="<?= $intent->client_secret ?>"><b>Pay</b> with <b>Card</b></button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-10">
+                            <h5 class="mt-4 text-center col-12">OR</h5>
+                            <div id="paypal-button-container"></div>
                         </div>
                     </div>
-
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-6">
-                    <div class="cart__total-amount">
-                        <h5 class="mb-2">Order Summary</h5>
-                        <hr>
-                        <ul class="list-unstyled mb-0 col-6">
-                            <li><span>Subtotal :</span><span>$ <?= $subtotal; ?></span></li>
-                            <?php if (isset($discount)) : ?>
-                                <li><span>Promotions :</span><span>- $ <?= $discount;  ?></span></li>
-                            <?php
-                            endif; ?>
-                            <li><span>Sales Tax (11.5%) :</span><span>$ <?= $tax; ?></span></li>
-                            <li><span>Order Total :</span><span>$ <?= $total; ?></span></li>
-                        </ul>
-                    </div><!-- /.cart__total-amount -->
+
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6">
+                <div class="cart__total-amount">
+                    <h5 class="mb-2">Order Summary</h5>
+                    <hr>
+                    <ul class="list-unstyled mb-0 col-6">
+                        <li><span>Subtotal :</span><span>$ <?= $subtotal; ?></span></li>
+                        <?php if (isset($discount)) : ?>
+                            <li><span>Promotions :</span><span>- $ <?= $discount;  ?></span></li>
+                        <?php
+                        endif; ?>
+                        <li><span>Sales Tax (11.5%) :</span><span>$ <?= $tax; ?></span></li>
+                        <li><span>Order Total :</span><span>$ <?= $total; ?></span></li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </section>
-</form>
+    </div>
+</section>
 
-<script>
-    paypal.Buttons({
-        style: {
-            layout: 'vertical',
-            color: 'blue',
-            label: 'pay',
-        },
-        createOrder: function() {
-            return fetch('/checkout/pay-paypal', {
-                method: 'post',
-                headers: {
-                    'content-type': 'application/json'
-                }
-            }).then(function(res) {
-                return res.json();
-            }).then(function(data) {
-                return data.result.id;
-            });
-        },
-        onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
-                $('#paypal').val(details.purchase_units[0].reference_id);
-                $('form#form_checkout').submit();
-            });
-        }
-    }).render('#paypal-button-container');
-
-
-    $('#card_num').keyup(function() {
-        var foo = $(this).val().split(" ").join("");
-        if (foo.length > 0) {
-            foo = foo.match(new RegExp('.{1,4}', 'g')).join(" ");
-        }
-        $(this).val(foo);
-    });
-
-    $('#card_num').keyup(function() {
-        var foo = $(this).val().split(" ").join(""); // remove hyphens
-        if (foo.length > 0) {
-            foo = foo.match(new RegExp('.{1,4}', 'g')).join(" ");
-        }
-        $(this).val(foo);
-    });
-
-    $('#exp_date').keyup(function() {
-        var foo = $(this).val().split("/").join(""); // remove hyphens
-        if (foo.length > 0) {
-            foo = foo.match(new RegExp('.{1,4}', 'g')).join("/");
-        }
-        $(this).val(foo);
-    });
-</script>
+<script id="checkout" secret="<?= $intent->client_secret; ?>" src="/js/checkout.js"></script>
