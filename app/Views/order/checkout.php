@@ -59,7 +59,7 @@
                                     <tr class="cart__product ">
                                         <td class="cart__product-item" style="border-bottom:0;border-left:0;border-right:0;">
                                             <div class="cart__product-title">
-                                                <h5 class="mb-2" style="font-size: 15px;"><?= $item_name; ?></h5>
+                                                <h5 class="mb-2" style="font-size: 15px; width:100px"><?= $item_name; ?></h5>
                                                 <?php if (!empty($item_modifier)) : ?>
                                                     <?php foreach ($item_modifier as $modifier) : ?>
                                                         <span class="text-muted ml-2"><?= $modifier['modifier_item']; ?></span><br>
@@ -67,14 +67,16 @@
                                                 <?php endif; ?>
                                                 <?php if (!empty($item_addon)) : ?>
                                                     <?php foreach ($item_addon as $addon) : ?>
-                                                        <span class="text-muted ml-2">+ <?= $addon['addon_item']; ?></span><br>
+                                                        <span class="text-muted ml-2"> <?= $addon['addon_item']; ?></span><br>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
                                                 <?php if (!empty($item_instruct)) : ?>
                                                     Instructions: <span class="text-muted ml-2"><?= $item_instruct; ?></span><br>
                                                 <?php endif; ?>
+                                                <a class="text-danger mt-3" href="/cart/remove/<?= $key; ?>">(Remove Item)</a>
+
                                             </div>
-                                            <a href="/cart/remove/<?= $key; ?>"><i class="fa fa-close cart__product-remove"></i></a>
+
                                         </td>
                                         <td class="cart__product-price">$ <?= $item_price; ?>
                                         </td>
@@ -97,25 +99,34 @@
 
 
                                 <tr class="cart__product-action">
-
                                     <td colspan="4">
                                         <div class="row">
-                                            <div class="col-sm-12 col-md-12 col-lg-12 cart__product-action-content">
-                                                <div class="col-6 pl-0">
-                                                    <label>Special Instructions</label>
-                                                    <textarea class="form-control" cols="20" rows="2" style="width:40em;height:8em;min-height:8em" name="instruct" maxlength="250"></textarea>
+
+                                            <div class="col-md-6 mb-10">
+                                                <label>Special Instructions</label>
+                                                <textarea class="form-control" cols="50" rows="2" name="instruct" maxlength="250"></textarea>
+                                            </div>
+
+                                            <!-- <div class="col-sm-6 col-md-6 col-lg-6 cart__product-action-content">
+                                                <label>Special Instructions</label>
+                                                <textarea class="form-control" cols="50" rows="2" name="instruct" maxlength="250"></textarea>
+                                            </div> -->
+
+                                            <div class="col-md-6">
+                                                <div class="d-flex flex-wrap mb-30">
+                                                    <input type="text" class="form-control mb-10 mr-10" form="code" name="promo" placeholder="Coupon Code">
+                                                    <button class="btn btn__primary mb-10" form="code">Apply
+                                                        Coupon</button>
                                                 </div>
 
-                                                <div>
-                                                    <div class="d-flex flex-wrap mb-30">
-                                                        <input type="text" class="form-control mb-10 mr-10" form="code" name="promo" placeholder="Coupon Code">
-                                                        <button class="btn btn__primary mb-10" form="code">Apply
-                                                            Coupon</button>
-                                                    </div>
-                                                    <a class="btn btn__secondary mr-10" href="/order-now">Add More Items</a>
-                                                    <button class="btn btn__primary float-right" type="submit">Proceed to Payment</button>
+                                                <div class="d-flex flex-wrap mb-30">
+                                                    <button class="btn btn__primary " type="submit">Proceed to Payment</button>
                                                 </div>
-                                            </div><!-- /.col-lg-2  -->
+
+                                            </div>
+
+
+
                                         </div><!-- /.row  -->
                                     </td>
                                 </tr>

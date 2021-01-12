@@ -1,7 +1,7 @@
 
 
 
-var stripe = Stripe('pk_test_51Hj8OgGmHVnRihcTtGtU4lfMuxP5ETrOBOP9xsbL0FYBaVFhOMGoXinfkmEaEJcJdamX5J9w8AYqGwE6d56jd6JW00wrElOaqE');
+var stripe = Stripe('pk_live_51Hj8OgGmHVnRihcTLXzLkTbDUlThGbTtLkxJW4Ho31RptH6DULwEsSPshn04J4o62EwbHf7ZIxLnpHKK2GQqI4Xf00LsQFmcSb');
 var elements = stripe.elements();
 
 var elementStyles = {
@@ -57,6 +57,23 @@ var cardCvc = elements.create('cardCvc', {
 });
 cardCvc.mount('#card-cvc');
 
+$('#store-form').submit(function (ev) {
+    ev.preventDefault();
+
+    var form = document.getElementById("form_checkout");
+    var name = document.getElementById("name");
+    var email = document.getElementById("email");
+    var phone = document.getElementById("phone");
+
+    if (!name.checkValidity() || !email.checkValidity() || !phone.checkValidity()) {
+        form.reportValidity();
+        form.classList.add('was-validated');
+    } else { 
+        $('form#form_checkout').submit();
+    }
+});
+
+
 $('#card-form').submit(function (ev) {
     ev.preventDefault();
 
@@ -110,7 +127,7 @@ paypal.Buttons({
         } else {
             $('body').loadingModal();
 
-            return fetch('http://localhost:8080/checkout/pay-paypal', {
+            return fetch('/checkout/pay-paypal', {
                 method: 'post',
                 headers: {
                     'content-type': 'application/json'
@@ -124,7 +141,7 @@ paypal.Buttons({
     },
     onApprove: function (data, actions) {
         return actions.order.capture().then(function (details) {
-            $('#paypal').val(details.purchase_units[0].reference_id);
+            $('#paypal').val(details.purchase_units[0].payments.captures[0].id);
             $('form#form_checkout').submit();
         });
     },
@@ -133,6 +150,7 @@ paypal.Buttons({
         setTimeout(() => {
             $('body').loadingModal('destroy');
         }, 500);
+        console.log(err);
     },
     onCancel: function (details) {
         $('body').loadingModal('hide');

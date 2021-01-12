@@ -156,6 +156,11 @@ select {
 /*----------------------------
       Helper Classes
 ----------------------------*/
+
+.large-font{
+     font-size: 17px;
+}
+
 .col-padding-0>.row {
   margin: 0;
 }
@@ -1406,7 +1411,7 @@ h6 {
   .page-title-layout7 {
     padding-top: 30px;
     padding-bottom: 30px;
-    text-align: center;
+    text-align:left;
   }
 
   .page-title-layout7 .breadcrumb {
@@ -2966,8 +2971,8 @@ textarea.form-control {
 
   .navbar-actions-wrap {
     position: absolute;
-    top: 50%;
-    right: 60px;
+    top: 20%;
+    right: 20px;
     -webkit-transform: translateY(-50%);
     -moz-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
@@ -2976,7 +2981,8 @@ textarea.form-control {
   }
 
   .navbar__action-btn-reserve {
-    display: none;
+    display: block;
+    margin-bottom: 8px;
   }
 
   .header-transparent+.page-title {
@@ -3758,6 +3764,46 @@ textarea.form-control {
     padding-bottom: 15px;
   }
 }
+
+
+#checkoutBtn {
+  position: fixed;
+  left: 30px;
+  bottom: 30px;
+  width: 140px;
+  height: 45px;
+  opacity: 0;
+  z-index: 1000;
+  font-size: 20px;
+  border-radius: 3px;
+  color: #ffffff;
+  background-color: #83bb43;
+  -webkit-transform: translateY(30px);
+  -moz-transform: translateY(30px);
+  -ms-transform: translateY(30px);
+  -o-transform: translateY(30px);
+  transform: translateY(30px);
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+#checkoutBtn:hover {
+  background-color: #282828;
+}
+
+#checkoutBtn.actived {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+  -moz-transform: translateY(0);
+  -ms-transform: translateY(0);
+  -o-transform: translateY(0);
+  transform: translateY(0);
+}
+
+
 
 /* Scroll Top Button */
 #scrollTopBtn {

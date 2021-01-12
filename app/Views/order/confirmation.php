@@ -28,16 +28,16 @@
                     <hr>
                     <p>
                         Dear <?= ucwords(strtolower($customer['cus_name'])); ?>,</br>
-                        Your order has been placed at Olive Mediterranean Grill, <?= $rest['rest_name']; ?>.<br></br>
+                        Your order has been placed at <?= $rest['rest_name']; ?>.<br></br>
 
                         Your order number is: <span class="color-theme"> <?= $order['order_num']; ?></span> <br>
-                        <?php $deliver_at = new DateTime($order['placed_at']);
+                        <?php $deliver_at = new DateTime($order['deliver_at']);
 
                         ?>
                         Kindly, pick up your order at: <span class="color-theme"> <?= ' ' . $deliver_at->format('h:i A'); ?></span></br></br>
 
                         Thank you, </br>
-                        Olive Mediterranean Grill </p>
+                        <?= $rest['rest_name']; ?></p>
                 </div>
             </div>
             <div class="col-sm-12 col-md-6 col-lg-6">

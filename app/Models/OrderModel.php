@@ -8,6 +8,7 @@ use App\Models\OrderItemModel;
 use App\Models\OrderItemAddonModel;
 use App\Models\OrderItemModifierModel;
 use DateTime;
+use DateTimeZone;
 use ErrorException;
 use Stripe\Stripe;
 
@@ -48,6 +49,8 @@ class OrderModel extends Model
     public function createOrder($cart, $cus_id, $payment_id, $order_type, $payment_method, $order_num)
     {
         $placed_at = new DateTime();
+        $placed_at->setTimezone(new DateTimeZone('America/Chicago'));
+
         $order_data = [
             'order_num' => $order_num,
             'cus_id' => $cus_id,

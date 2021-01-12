@@ -99,6 +99,18 @@ $(function () {
             $scrollTopBtn.removeClass('actived');
         }
     });
+
+    var $checkoutBtn = $('#checkoutBtn');
+    // Show Scroll Top Button
+    $win.on('scroll', function () {
+        if ($win.width() <= 800 && $(this).scrollTop() > 700) {
+            $checkoutBtn.addClass('actived');
+        } else {
+            $checkoutBtn.removeClass('actived');
+        }
+    });
+
+
     // Animate Body after Clicking on Scroll Top Button
     $scrollTopBtn.on('click', function () {
         $('html, body').animate({

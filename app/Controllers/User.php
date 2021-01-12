@@ -18,6 +18,8 @@ class User extends Controller
         $this->session = session();
         $this->order = new OrderModel();
         $this->customer = new CustomerModel();
+        $this->restaurant = new RestaurantModel();
+
     }
 
     public function register()
@@ -25,6 +27,8 @@ class User extends Controller
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = strtolower('register');
         $data['header'] = "header-layout2";
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+
 
         if ($this->request->getPost()) {
             $err = ['msg' => 'Error: Email already exists, Try a different email!'];
@@ -73,6 +77,7 @@ class User extends Controller
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = strtolower('login');
         $data['header'] = "header-layout2";
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         $err = ['msg' => 'Error: Invalid Email/Password. Try again!'];
         $err2 = ['msg' => 'Error: Account does not exisits. Register now!'];
@@ -114,6 +119,7 @@ class User extends Controller
         $data['title'] = ucfirst('account');
         $data['header'] = "header-layout2";
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
 
         if ($this->request->getPost()) {
@@ -143,6 +149,8 @@ class User extends Controller
 
     public function order_history()
     {
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = ucwords('order history');
         $data['header'] = "header-layout2";
@@ -160,6 +168,8 @@ class User extends Controller
 
     public function change_password()
     {
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = ucwords('change password');
         $data['header'] = "header-layout2";
@@ -189,6 +199,7 @@ class User extends Controller
         $data['title'] = ucwords('Promotions');
         $data['header'] = "header-layout2";
         $data['content'] = view('user/promotion');
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         echo view('templates/header', $data);
         echo view('user/profile', $data);
@@ -226,6 +237,7 @@ class User extends Controller
         $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
         $data['title'] = ucwords('Order Details');
         $data['header'] = "header-layout2";
+        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         echo view('templates/header', $data);
         echo view('user/profile', $data);

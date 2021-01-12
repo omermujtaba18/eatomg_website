@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/css/checkout.css">
 <script src="/js/loader.js"></script>
 
-<script src="https://www.paypal.com/sdk/js?client-id=ATE4yA5JUr6WkY0Q84F_naz0Q5JK0YOZgsO_B6cchIvoXmHNW3MKjc8TXeJ2kjVzmtdeZDJP1E391oAS&disable-funding=credit,card">
+<script src="https://www.paypal.com/sdk/js?client-id=AVQv9FQshWl1NnPJK_zPySNeRq_w-OGHjBfdTHNHvrQxNTbftNXiNF3FtM2_oaWi6G3ONs-WSjoX0KAm&disable-funding=credit,card">
 </script>
 <script src="https://js.stripe.com/v3/"></script>
 
@@ -45,21 +45,21 @@
                                     </div>
                                 <?php } ?>
                                 <input type="hidden" name="cus_id" class="form-control" placeholder="John Doe" value="<?= !empty($_SESSION['cus_id']) ? $_SESSION['cus_id'] : ''; ?>" required>
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <label>Name</label>
                                     <input type="text" name="name" id="name" class="form-control" value="<?= !empty($_SESSION['cus_name']) ? $_SESSION['cus_name'] : '' ?>" required autofocus>
                                     <div class="invalid-feedback" style="margin-bottom:20px">
                                         Please enter your name.
                                     </div>
                                 </div>
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <label>Email address</label>
                                     <input type="email" name="email" id="email" class="form-control" value="<?= !empty($_SESSION['cus_email']) ? $_SESSION['cus_email'] : '' ?>" required>
                                     <div class="invalid-feedback" style="margin-bottom:20px">
                                         Please enter your email address.
                                     </div>
                                 </div>
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <label>Phone</label>
                                     <input type="text" id="phone" name="phone" pattern="\d*" class="form-control" value="<?= !empty($_SESSION['cus_phone']) ? $_SESSION['cus_phone'] : '' ?>" maxlength="10" required placeholder="1231231234">
                                     <div class="invalid-feedback" style="margin-bottom:20px">
@@ -79,27 +79,29 @@
                         </div>
                         <div class="cell paycard card-stripe" id="example-3" style="width:100%">
                             <form id="card-form">
-                                <div class="col-md-10">
-                                    <label>Credit Card Number</label>
-                                    <div id="card-number" class="form-control field"></div>
+                                <div class="row col">
+                                    <div class="col-md-12">
+                                        <label>Credit Card Number</label>
+                                        <div id="card-number" class="form-control field"></div>
+                                    </div>
                                 </div>
                                 <div class="row col">
-                                    <div class="col-md-5">
+                                    <div class="col-md-6">
                                         <label>Expiry Date</label>
                                         <div id="card-expiry" class="form-control field"></div>
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-6">
                                         <label>CVC</label>
                                         <div id="card-cvc" class="form-control field"></div>
                                     </div>
                                 </div>
-                                <div class="col-10">
-                                    <button type="submit" class="btn btn__primary btn-block" data-secret="<?= $intent->client_secret ?>"><b>Pay</b> with <b>Card</b></button>
+                                <div class="col-8 mx-auto">
+                                    <button type="submit" class="btn btn__primary btn-block"><b>Pay</b> with <b>Card</b></button>
                                 </div>
                             </form>
                         </div>
 
-                        <div class="col-10">
+                        <div class="col-8 mx-auto">
                             <h5 class="mt-4 text-center col-12">OR</h5>
                             <div id="paypal-button-container"></div>
                         </div>

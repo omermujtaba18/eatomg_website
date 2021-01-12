@@ -9,12 +9,12 @@ $buttonStyle = [
 <section id="page-title" class="page-title page-title-layout7">
     <div class="container">
         <div class="row">
-            <div class="col-sm-12 col-md-9 col-lg-9">
+            <div class="col-6">
                 <h2 class="pagetitle__desc color-dark"><?= $restaurant['rest_name']; ?></h2>
                 <p><?= $restaurant['rest_address']; ?><br><?= $restaurant['rest_phone']; ?></p>
-                <!-- <a href="http://localhost:8085/choose_restaurant" class="pagetitle__desc color-theme">Change Restaurant</a> -->
+
             </div>
-            <div class="col-sm-12 col-md-3 col-lg-3">
+            <div class="col-6 align-top">
                 <div class="navbar-actions-wrap float-right">
                     <div class="navbar-actions d-flex align-items-center">
                         <a href="/cart" class="navbar__action-btn ">
@@ -31,6 +31,14 @@ $buttonStyle = [
                         </a>
                     </div><!-- /.navbar-actions -->
                 </div><!-- /.navbar-actions-wrap -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <h2 class="pagetitle__desc color-dark pb-2">Change Restaurant</h2>
+                <a href="https://north-avenue.ninetofab.com/order-now" class="<?= $restaurant['rest_name'] == 'OMG - North Ave' ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2">North Ave</a>
+                <a href="https://van-buren.ninetofab.com/order-now" class="<?= $restaurant['rest_name'] == 'OMG - Van Buren' ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2">Van Buren</a>
+                <a href="https://omg-catering.ninetofab.com/order-now" class="<?= $restaurant['rest_name'] == 'OMG - Catering' ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2">OMG - Catering</a>
             </div>
         </div>
     </div>
@@ -51,11 +59,11 @@ $buttonStyle = [
             <div class="col-sm-12 col-md-3 col-lg-3">
                 <div class="cart__shiping">
                     <h5>MENU</h5>
-                    <a class="color-theme font-weight-bolder" href="/order-now/build-your-own/1">Build Your Own</a>
+                    <a class="color-theme font-weight-bolder large-font" href="/order-now/build-your-own/38">Build Your Own Plate</a>
                     <hr>
                     <?php foreach ($categories as $category) : ?>
                         <?php if ($category['category_id'] != 1) : ?>
-                            <a href="/order-now/<?= $category['category_slug']; ?>" class="color-theme <?= $title == $category['category_name'] ? 'font-weight-bolder' : '' ?>"><?= $category['category_name']; ?></a>
+                            <a href="/order-now/<?= $category['category_slug']; ?>" class="color-theme large-font <?= $title == $category['category_name'] ? 'font-weight-bolder' : '' ?>"><?= $category['category_name']; ?></a>
                             <hr>
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -76,7 +84,9 @@ $buttonStyle = [
 </section>
 
 <script>
-    $(".alert").delay(3000).slideUp(200, function() {
+    $(".alert").delay(10000).slideUp(200, function() {
         $(this).alert('close');
     });
+
+    window.location.hash = '#itemsection';
 </script>
