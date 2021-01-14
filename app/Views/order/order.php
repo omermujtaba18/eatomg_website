@@ -84,9 +84,9 @@ $buttonStyle = [
 </section>
 
 <script>
-    $(".alert").delay(10000).slideUp(200, function() {
-        $(this).alert('close');
-    });
+    setTimeout(() => {
+        $(".alert").alert('close')
+    }, 10000);
 
     window.location.hash = '#itemsection';
 </script>

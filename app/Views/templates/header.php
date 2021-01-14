@@ -2,15 +2,6 @@
 <html lang="en">
 
 <head>
-    
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-PZF5JMD');</script>
-<!-- End Google Tag Manager -->
-    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -19,19 +10,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <title><?= $restaurant['rest_name']; ?></title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700%7cShadows+Into+Light&display=swap">
     <link rel="stylesheet" href="/css/libraries.css" />
-    <script src="/js/jquery-3.3.1.min.js"></script>
+    <!-- <script src="/js/jquery-3.3.1.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
     <!-- <link rel="stylesheet" href="assets/css/animate.css" /> -->
     <link rel="stylesheet" href="/css/style.css" />
 </head>
 
 <body>
-    
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PZF5JMD"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-    
     <div class="wrapper">
         <header id="header" class="header <?= $header; ?>">
             <nav class="navbar navbar-expand-lg">
@@ -42,7 +30,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <button class="navbar-toggler" type="button">
                         <span class="menu-lines"><span></span></span>
                     </button>
-                     <div class="collapse navbar-collapse" id="mainNavigation">
+                    <div class="collapse navbar-collapse" id="mainNavigation">
                         <ul class="navbar-nav ml-auto">
                             <li class="nav__item with-dropdown">
                                 <a href="http://eatomg.com/" class="dropdown-toggle nav__item-link <?= $title == 'index' ? 'active' : '' ?>">HOME</a>

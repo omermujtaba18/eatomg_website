@@ -89,7 +89,7 @@ class Order extends Controller
         $this->order = new OrderModel();
         $this->customer = new CustomerModel();
         $this->addon = new AddOnModel();
-        $this->categories = $this->category->where(['rest_id' => getEnv('REST_ID'), 'is_show' => 1])->orderBy('priority','asc')->findAll();
+        $this->categories = $this->category->where(['rest_id' => getEnv('REST_ID'), 'is_show' => 1])->orderBy('priority', 'asc')->findAll();
         $this->itemmodifier = new ItemModifierModel();
         $this->itemAddon = new ItemAddonModel();
         $this->modifierGroup = new ModifierGroupModel();
@@ -170,7 +170,7 @@ class Order extends Controller
     public function item_by_id($category_slug = NULL, $item_id = NULL)
     {
         $request = $this->request->getPost();
-          
+
         if ($request) {
 
             $modifier_array = [];
@@ -183,40 +183,38 @@ class Order extends Controller
 
                     $modifier_group = $this->modifierGroup->where('modifier_group_id', $key)->first();
 
-                    if($modifier_group['multi_select']){
-                        foreach($value as $k => $v){
-                             $selected_modifier = $this->modifier->where(['modifier_group_id' => $key, 'modifier_item' => $v])->first();
-                    $modifier['modifier_group_id'] = $key;
-                    $modifier['modifier_group_instruct'] = $modifier_group['modifier_group_instruct'];
-                    $modifier['modifier_id'] = $selected_modifier['modifier_id'];
-                    $modifier['modifier_item'] = $selected_modifier['modifier_item'];
-                    $modifier['modifier_price'] = $selected_modifier['modifier_price'];
-                    $modifier_price += $modifier['modifier_price'];
+                    if ($modifier_group['multi_select']) {
+                        foreach ($value as $k => $v) {
+                            $selected_modifier = $this->modifier->where(['modifier_group_id' => $key, 'modifier_item' => $v])->first();
+                            $modifier['modifier_group_id'] = $key;
+                            $modifier['modifier_group_instruct'] = $modifier_group['modifier_group_instruct'];
+                            $modifier['modifier_id'] = $selected_modifier['modifier_id'];
+                            $modifier['modifier_item'] = $selected_modifier['modifier_item'];
+                            $modifier['modifier_price'] = $selected_modifier['modifier_price'];
+                            $modifier_price += $modifier['modifier_price'];
 
-                    array_push($modifier_array, $modifier);
+                            array_push($modifier_array, $modifier);
                         }
-                    }else{
-                    $selected_modifier = $this->modifier->where(['modifier_group_id' => $key, 'modifier_item' => $value])->first();
-                    $modifier['modifier_group_id'] = $key;
-                    $modifier['modifier_group_instruct'] = $modifier_group['modifier_group_instruct'];
-                    $modifier['modifier_id'] = $selected_modifier['modifier_id'];
-                    $modifier['modifier_item'] = $selected_modifier['modifier_item'];
-                    $modifier['modifier_price'] = $selected_modifier['modifier_price'];
-                    $modifier_price += $modifier['modifier_price'];
+                    } else {
+                        $selected_modifier = $this->modifier->where(['modifier_group_id' => $key, 'modifier_item' => $value])->first();
+                        $modifier['modifier_group_id'] = $key;
+                        $modifier['modifier_group_instruct'] = $modifier_group['modifier_group_instruct'];
+                        $modifier['modifier_id'] = $selected_modifier['modifier_id'];
+                        $modifier['modifier_item'] = $selected_modifier['modifier_item'];
+                        $modifier['modifier_price'] = $selected_modifier['modifier_price'];
+                        $modifier_price += $modifier['modifier_price'];
 
-                    array_push($modifier_array, $modifier);
+                        array_push($modifier_array, $modifier);
                     }
-
-               
                 }
             }
             if (!empty($request['a'])) {
                 foreach ($request['a'] as $key => $value) {
                     $addon_group = $this->addonGroup->where('addon_group_id', $key)->first();
 
-                    if($addon_group['multi_select']){
-                        
-                        foreach($value as $k => $v){
+                    if ($addon_group['multi_select']) {
+
+                        foreach ($value as $k => $v) {
                             $selected_addon = $this->addon->where(['addon_group_id' => $key, 'addon_item' => $v])->first();
                             $addon['addon_group_id'] = $key;
                             $addon['addon_group_instruct'] = $addon_group['addon_group_instruct'];
@@ -226,16 +224,15 @@ class Order extends Controller
                             $addon_price += $addon['addon_price'];
                             array_push($addon_array, $addon);
                         }
-
-                    }else{
-                    $selected_addon = $this->addon->where(['addon_group_id' => $key, 'addon_item' => $value])->first();
-                    $addon['addon_group_id'] = $key;
-                    $addon['addon_group_instruct'] = $addon_group['addon_group_instruct'];
-                    $addon['addon_id'] = $selected_addon['addon_id'];
-                    $addon['addon_item'] = $selected_addon['addon_item'];
-                    $addon['addon_price'] = $selected_addon['addon_price'];
-                    $addon_price += $addon['addon_price'];
-                    array_push($addon_array, $addon);
+                    } else {
+                        $selected_addon = $this->addon->where(['addon_group_id' => $key, 'addon_item' => $value])->first();
+                        $addon['addon_group_id'] = $key;
+                        $addon['addon_group_instruct'] = $addon_group['addon_group_instruct'];
+                        $addon['addon_id'] = $selected_addon['addon_id'];
+                        $addon['addon_item'] = $selected_addon['addon_item'];
+                        $addon['addon_price'] = $selected_addon['addon_price'];
+                        $addon_price += $addon['addon_price'];
+                        array_push($addon_array, $addon);
                     }
                 }
             }
@@ -350,6 +347,14 @@ class Order extends Controller
         $data['cart'] = $this->session->get('cart');
         $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
+        $this->session->has('show_push') ? $this->session->set('show_push', 0) : $this->session->set('show_push', 1);
+
+        $data['show_push'] = $this->session->show_push;
+
+        $data['items'] = $this->item->where(['rest_id' => getEnv('REST_ID'), 'push_item' => 1])->findAll();
+        $data['category'] = $this->category->where(['rest_id' => getEnv('REST_ID'), 'category_id' => $data['items'][0]['category_id']])->first();
+
+
         echo view('templates/header', $data);
         echo view('order/checkout', $data);
         echo view('templates/footer', $data);
@@ -419,10 +424,10 @@ class Order extends Controller
             if ($this->request->getPost('paypal') != '0') {
                 $payment_id = $this->request->getPost('paypal');
                 $order_id = $this->order->createOrder($cart, $cus_id, $payment_id, ORDER_TYPE, PAYMENT_METHOD_PAYPAL, $order_num);
-            }else if($this->request->getPost('card') != '0'){
+            } else if ($this->request->getPost('card') != '0') {
                 $order_id = $this->order->createOrder($cart, $cus_id, $payment_id, ORDER_TYPE, PAYMENT_METHOD_CARD, $order_num);
-            }else{
-                $order_id = $this->order->createOrder($cart, $cus_id, '', ORDER_TYPE, PAYMENT_METHOD_CASH , $order_num);
+            } else {
+                $order_id = $this->order->createOrder($cart, $cus_id, '', ORDER_TYPE, PAYMENT_METHOD_CASH, $order_num);
             }
 
             $this->session->set('order_id', $order_id);
@@ -465,8 +470,8 @@ class Order extends Controller
             $data['rest'] = $this->restaurant->find($data['order']['rest_id']);
             $data['customer'] = $this->customer->find($data['order']['cus_id']);
             $data['cart'] = $this->session->get('cart');
-            $this->send_email_restaurant($id,$data);
-            $this->send_email_customer($id,$data);
+            $this->send_email_restaurant($id, $data);
+            $this->send_email_customer($id, $data);
             $this->session->remove('cart');
         }
         $data['header'] = "header-layout2";
@@ -499,34 +504,35 @@ class Order extends Controller
         $this->session->remove('cart');
         return redirect()->to('/order-now');
     }
-    
-    public function send_email_restaurant($id,$data){
+
+    public function send_email_restaurant($id, $data)
+    {
         $email = \Config\Services::email();
         $email->setFrom('orders@ninetofab.com', $data['rest']['rest_name']);
         $email->setTo($data['rest']['rest_email']);
         $email->setCC('ah@morango.net,pekin@eatomg.com,omer.mujtaba96@gmail.com');
         $subject = '[Online Order#' . $data['order']['order_num'] . ']: ' . $data['rest']['rest_name'];
         $email->setSubject($subject);
-        $email->setMessage(view('templates/order_email_rest',$data));
+        $email->setMessage(view('templates/order_email_rest', $data));
 
-        if(!$email->send(false)){
+        if (!$email->send(false)) {
             $email->printDebugger();
         }
         $email->clear();
     }
-    
-    public function send_email_customer($id,$data){
+
+    public function send_email_customer($id, $data)
+    {
         $email = \Config\Services::email();
         $email->setFrom($data['rest']['rest_email'], $data['rest']['rest_name']);
         $email->setTo($data['customer']['cus_email']);
         $email->setSubject('Your order has been placed!');
-        $email->setMessage(view('templates/order_email_customer',$data));
+        $email->setMessage(view('templates/order_email_customer', $data));
 
-        if(!$email->send(false)){
+        if (!$email->send(false)) {
             $email->printDebugger();
         }
 
         $email->clear();
     }
-    
 }
