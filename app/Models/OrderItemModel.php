@@ -12,6 +12,7 @@ class OrderItemModel extends Model
     protected $allowedFields = [
         'order_id',
         'item_id',
-        'order_item_quantity'
+        'order_item_quantity',
+        'order_item_note'
     ];
 }
