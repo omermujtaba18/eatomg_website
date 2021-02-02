@@ -147,8 +147,8 @@
       <tr class="item">
         <td colspan="2"><b>Pickup at </b>: <?= $deliver_at->format('M d, Y @ h:i:s A') ?></td>
       </tr>
-      
-       <tr class="details">
+
+      <tr class="details">
         <td colspan="2"><b>Special Instruction: </b>: <?= $order['order_instruct']; ?></td>
       </tr>
 
@@ -160,17 +160,17 @@
 
       <?php foreach ($cart['items'] as $item) : ?>
         <tr class="item">
-          <td><?= $item['item_quantity']; ?> x <?= $item['item_name']; ?> <br/><br/>
-          
-          <?php foreach($item['modifier'] as $m): ?>
-                <?= $m['modifier_item'] . '<br/>'; ?>
-          <? endforeach; ?>
-          
-          <?php foreach($item['addon'] as $a): ?>
-                <?= $a['addon_item'] . '<br/>'; ?>
-          <? endforeach; ?>
-          <br/>
-          <?= $item['item_instruct'] == '' ? 'Instruction:' . $item['item_instruct'] : ''; ?>
+          <td><?= $item['item_quantity']; ?> x <?= $item['item_name']; ?> <br /><br />
+
+            <?php foreach ($item['modifier'] as $m) : ?>
+              <?= $m['modifier_item'] . '<br/>'; ?>
+            <?php endforeach; ?>
+
+            <?php foreach ($item['addon'] as $a) : ?>
+              <?= $a['addon_item'] . '<br/>'; ?>
+            <?php endforeach; ?>
+            <br />
+            <?= $item['item_instruct'] == '' ? 'Instruction:' . $item['item_instruct'] : ''; ?>
           </td>
           <td>$ <?= $item['item_total']; ?></td>
         </tr>

@@ -135,7 +135,7 @@ class Order extends Controller
         }
     }
 
-    public function add_to_cart($item, $quantity, $instruct, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
+    public function add_to_cart($item, $quantity, $instruct, $free, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
     {
         if (!$this->session->has('cart')) {
             $cart['items'] = [];
@@ -145,9 +145,9 @@ class Order extends Controller
         $cart = $this->session->get('cart');
         $cart_item['item_id'] = $item['item_id'];
         $cart_item['item_name'] = $item['item_name'];
-        $cart_item['item_price'] = $item['item_price'] + $modifier_price + $addon_price;
-        $cart_item['item_total'] = $quantity * ($cart_item['item_price']);
-        $cart_item['item_quantity'] = intval($quantity);
+        $cart_item['item_price'] = $free ? 0 : $item['item_price'] + $modifier_price + $addon_price;
+        $cart_item['item_total'] = $free ? 0 : $quantity * ($cart_item['item_price']);
+        $cart_item['item_quantity'] = $free ? 1 : intval($quantity);
         $cart_item['item_instruct'] = $instruct;
         $cart_item['modifier'] = $modifier;
         $cart_item['addon'] = $addon;
@@ -238,7 +238,7 @@ class Order extends Controller
             }
 
             $item = $this->item->find($item_id);
-            $this->add_to_cart($item, $this->request->getPost('quantity'), $this->request->getPost('instruction'), $modifier_array, $modifier_price, $addon_array, $addon_price);
+            $this->add_to_cart($item, $this->request->getPost('quantity'), $this->request->getPost('instruction'), 0, $modifier_array, $modifier_price, $addon_array, $addon_price);
             $this->session->set('message', '<strong>"' . $item['item_name'] . '"<strong> added to cart.');
             return redirect()->to('/order-now/' . $category_slug);
         }
@@ -296,10 +296,16 @@ class Order extends Controller
             ])->first();
 
             if (!empty($promotion)) {
-                $cart = $this->session->get('cart');
-                $cart['cart_promo']['type'] = $promotion['promo_type'];
-                $cart['cart_promo']['amount'] = $promotion['promo_amount'];
-                $this->session->set('cart', $cart);
+
+                if ($promotion['free_item'] != 0) {
+                    $item = $this->item->find($promotion['free_item']);
+                    $this->add_to_cart($item, 1, '', 1);
+                } else {
+                    $cart = $this->session->get('cart');
+                    $cart['cart_promo']['type'] = $promotion['promo_type'];
+                    $cart['cart_promo']['amount'] = $promotion['promo_amount'];
+                    $this->session->set('cart', $cart);
+                }
             }
         }
 
