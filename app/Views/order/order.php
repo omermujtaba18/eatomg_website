@@ -45,6 +45,29 @@ $buttonStyle = [
 </section>
 
 <section class="shop shopping-cart pb-50" style="padding-top:50px !important;">
+
+    <div class="modal fade bd-example-modal-lg" id="timeModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger text-center">Sorry, We are closed right now!</h5>
+                </div>
+                <div class="modal-body">
+                    <b>House of operation at <?= $restaurant['rest_name']; ?>:</b> <br><br>
+
+                    <?php foreach ($times as $t) :
+                        $time = $t['start_time'] == '00:00:00' ? 'Closed' : $t['start_time'] . ' - ' . $t['end_time']; ?>
+                        <?= $t['day'] . " : " . $time . '<br>'; ?>
+                    <?php endforeach; ?>
+                    <br>
+                    Thank you,<br>
+                    Olive Mediterranean Grill
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="container">
         <?php if (isset($_SESSION['message'])) : ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -89,4 +112,9 @@ $buttonStyle = [
     }, 10000);
 
     window.location.hash = '#itemsection';
+
+    <?php
+    if ($close) { ?>
+        $('#timeModal').modal('show');
+    <?php } ?>
 </script>

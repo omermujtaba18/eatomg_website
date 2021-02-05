@@ -17,6 +17,7 @@ use App\Models\OrderItemModifierModel;
 use App\Models\OrderItemAddonModel;
 use App\Models\PromotionModel;
 use App\Models\RestaurantModel;
+use App\Models\RestaurantTimeModel;
 use CodeIgniter\Controller;
 use CodeIgniter\I18n\Time;
 use DateTime;
@@ -99,12 +100,35 @@ class Order extends Controller
         $this->order_item_addon = new OrderItemAddonModel();
         $this->promotion = new PromotionModel();
         $this->restaurant = new RestaurantModel();
+        $this->restaurant_time = new RestaurantTimeModel();
         $this->session = session();
     }
 
     // Route: /order-now , /order-now/category
     public function index($category_slug = NULL)
     {
+        $day = date("l");
+        $data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
+
+        $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
+
+        if ($time['start_time'] == '00:00:00' && $time['end_time'] == '00:00:00') {
+            $data['close'] = true;
+        } else {
+            $startTime = DateTime::createFromFormat('H:i:s', $time['start_time']);
+            $startTime = $startTime->format('H:i:s');
+
+            $endTime = DateTime::createFromFormat('H:i:s', $time['end_time']);
+            $endTime = $endTime->format('H:i:s');
+
+            $currentTime = new DateTime('now');
+            $currentTime = $currentTime->format('H:i:s');
+
+            if (!($currentTime >= $startTime && $currentTime <= $endTime)) {
+                $data['close'] = true;
+            }
+        }
+
         /* Header Data: Total Orders, Header Type, Customer ID(if login),  */
         $data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
         $data['header'] = "header-layout2";
@@ -169,6 +193,28 @@ class Order extends Controller
     // Route: order-now/category_slug/item_id
     public function item_by_id($category_slug = NULL, $item_id = NULL)
     {
+        $day = date("l");
+        $data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
+
+        $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
+
+        if ($time['start_time'] == '00:00:00' && $time['end_time'] == '00:00:00') {
+            $data['close'] = true;
+        } else {
+            $startTime = DateTime::createFromFormat('H:i:s', $time['start_time']);
+            $startTime = $startTime->format('H:i:s');
+
+            $endTime = DateTime::createFromFormat('H:i:s', $time['end_time']);
+            $endTime = $endTime->format('H:i:s');
+
+            $currentTime = new DateTime('now');
+            $currentTime = $currentTime->format('H:i:s');
+
+            if (!($currentTime >= $startTime && $currentTime <= $endTime)) {
+                $data['close'] = true;
+            }
+        }
+
         $request = $this->request->getPost();
 
         if ($request) {
