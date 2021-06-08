@@ -2,7 +2,8 @@
     <?php if (isset($_SESSION['message'])) : ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <?php echo ($_SESSION['message']);
-            unset($_SESSION['message']); ?>
+            unset($_SESSION['message']); ?> </br></br>
+            <a href="/cart" style="text-decoration:underline">Click here to view your cart</a>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>

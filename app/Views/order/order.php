@@ -109,9 +109,7 @@ $buttonStyle = [
 <script>
     setTimeout(() => {
         $(".alert").alert('close')
-    }, 10000);
-
-    window.location.hash = '#itemsection';
+    }, 100000);
 
     <?php
     if ($close) { ?>
