@@ -33,17 +33,20 @@
                     <div class="collapse navbar-collapse" id="mainNavigation">
                         <ul class="navbar-nav ml-auto">
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/" class="dropdown-toggle nav__item-link <?= $title == 'index' ? 'active' : '' ?>">HOME</a>
+                                <a href="http://eatomg.com/" class="dropdown-toggle nav__item-link">HOME</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/founder-story" class="dropdown-toggle nav__item-link <?= $title == 'founder-story' ? 'active' : '' ?>">FOUNDERS
+                                <a href="http://eatomg.com/founder-story" class="dropdown-toggle nav__item-link">FOUNDERS
                                     STORY</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/menu" class="dropdown-toggle nav__item-link <?= $title == 'menu' ? 'active' : '' ?>">MENU</a>
+                                <a href="http://eatomg.com/menu" class="dropdown-toggle nav__item-link">MENU</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/gallery" class="dropdown-toggle nav__item-link <?= $title == 'gallery' ? 'active' : '' ?>">GALLERY</a>
+                                <a href="http://eatomg.com/gallery" class="dropdown-toggle nav__item-link">GALLERY</a>
+                            </li>
+                            <li class="nav__item with-dropdown">
+                                <a href="http://eatomg.com/blog" class="dropdown-toggle nav__item-link">BLOG</a>
                             </li>
                         </ul>
                         <div class="navbar-actions-wrap">
