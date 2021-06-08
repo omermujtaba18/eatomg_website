@@ -12,6 +12,7 @@ class RestaurantModel extends Model
     protected $allowedFields = [
         'rest_name',
         'rest_location',
-        'rest_address'
+        'rest_address',
+        'priority'
     ];
 }

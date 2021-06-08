@@ -106,6 +106,7 @@ class Order extends Controller
         $this->session = session();
         $this->data = [];
         $this->data['business'] =  $this->business->where(['business_id' => getenv('BUSINESS_ID')])->first();
+        $this->data['restaurants'] =  $this->restaurant->where(['business_id' => getEnv('BUSINESS_ID')])->orderBy('priority', 'asc')->findAll();
     }
 
     // Route: /order-now , /order-now/category

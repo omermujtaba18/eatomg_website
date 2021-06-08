@@ -7,12 +7,52 @@ $buttonStyle = [
 ?>
 
 <section id="page-title" class="page-title page-title-layout7">
-    <div class="container">
+
+    <div class="container d-none d-sm-block">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="pagetitle__desc color-dark pb-2" style="text-transform:none">Select a restuarant location</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <?php foreach ($restaurants as $restaurant) : ?>
+                <div class="col-lg-2 col-md-3">
+                    <a href=" <?= $restaurant['is_coming_soon'] ? '#' : $restaurant['url']; ?>" class="<?= $restaurant['rest_id'] == getEnv('REST_ID') ? $buttonStyle[0] : $buttonStyle[1] ?> mb-2"><?= substr($restaurant['rest_name'], 0, 10); ?></a>
+                    <?= $restaurant['is_coming_soon'] ? 'Coming soon!' : '' ?>
+                    <div class="d-none d-md-block"><?= $restaurant['rest_address']; ?><br><?= $restaurant['rest_phone']; ?></div> </br>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
         <div class="row">
             <div class="col-6">
-                <h2 class="pagetitle__desc color-dark"><?= $restaurant['rest_name']; ?></h2>
-                <p><?= $restaurant['rest_address']; ?><br><?= $restaurant['rest_phone']; ?></p>
+            </div>
+            <div class="col-6 align-top offset-md-6">
+                <div class="navbar-actions-wrap float-right">
+                    <div class="navbar-actions d-flex align-items-center">
+                        <a href="/cart" class="navbar__action-btn ">
+                            <i class="icon-cart"></i><span class="cart__label"><?= $cart_total; ?></span>
+                        </a>
+                        <a href="/cart">
+                            <h1 class="pagetitle__heading color-theme">Checkout</h1>
+                        </a>
 
+                    </div><!-- /.navbar-actions -->
+                    <div class="float-right mt-1">
+                        <a href="/empty_cart">
+                            <span>Clear Cart</span>
+                        </a>
+                    </div><!-- /.navbar-actions -->
+                </div><!-- /.navbar-actions-wrap -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container d-sm-none">
+        <div class="row">
+            <div class="col-6">
+                <h1 class="pagetitle__desc color-dark pb-2" style="text-transform:none">Select a restuarant location</h1>
             </div>
             <div class="col-6 align-top">
                 <div class="navbar-actions-wrap float-right">
@@ -35,13 +75,13 @@ $buttonStyle = [
         </div>
         <div class="row">
             <div class="col-6">
-                <h2 class="pagetitle__desc color-dark pb-2">Change Restaurant</h2>
-                <a href="https://north-avenue.ninetofab.com/order-now" class="<?= $restaurant['rest_name'] == 'OMG - North Ave' ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2">North Ave</a>
-                <a href="https://van-buren.ninetofab.com/order-now" class="<?= $restaurant['rest_name'] == 'OMG - Van Buren' ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2">Van Buren</a>
-                <a href="https://omg-catering.ninetofab.com/order-now" class="<?= $restaurant['rest_name'] == 'OMG - Catering' ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2">OMG - Catering</a>
+                <?php foreach ($restaurants as $restaurant) : ?>
+                    <a href=" <?= $restaurant['url']; ?>" class="<?= $restaurant['rest_id'] == getEnv('REST_ID') ? $buttonStyle[0] : $buttonStyle[1] ?> ml-2"><?= substr($restaurant['rest_name'], 0, 10); ?></a>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
+
 </section>
 
 <section class="shop shopping-cart pb-50" style="padding-top:50px !important;">
