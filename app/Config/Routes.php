@@ -31,7 +31,7 @@ $routes->setAutoRoute(false);
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Order::index/sandwiches');
+$routes->get('/', 'Order::index');
 $routes->match(['get', 'post'], '/register', 'User::register');
 $routes->match(['get', 'post'], '/login', 'User::login');
 $routes->match(['get', 'post'], '/user/change-password', 'User::change_password');
@@ -43,7 +43,7 @@ $routes->get('/user/order/(:num)', 'User::get_order/$1');
 //Order Routes
 // $routes->get('/select-restauarant', 'Order::select_restauarant');
 $routes->match(['get', 'post'], '/order-now/(:any)/(:num)', 'Order::item_by_id/$1/$2');
-$routes->get('/order-now', 'Order::index/sandwiches');
+$routes->get('/order-now', 'Order::index');
 $routes->get('/order-now/(:any)', 'Order::index/$1');
 $routes->match(['get', 'post'], '/cart', 'Order::cart');
 $routes->match(['get', 'post'], '/cart/remove/(:num)', 'Order::remove_from_cart/$1');

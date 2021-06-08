@@ -148,16 +148,17 @@ class Order extends Controller
         $this->data["categories"] = $this->categories;
 
         /* First Category, if category_slug is not set */
-        $this->data['category'] = $this->category->where('rest_id', getEnv('REST_ID'))->first();
+        $this->data['category'] = $this->category->where('rest_id', getEnv('REST_ID'))->orderBy('priority', 'asc')->first();
         $this->data['items'] = $this->item->where(['category_id' => $this->data['category']['category_id']])->findAll();
 
         /* Check if category slug is set, and return that category items*/
         if (isset($category_slug)) {
             $this->data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->findAll()[0];
             $this->data['items'] = $this->item->where(["category_id" => $this->data['category']['category_id']])->findAll();
-            if (count($this->data['items']) == 1) {
-                return redirect()->to('/order-now/' . $category_slug . '/' . $this->data['items'][0]['item_id']);
-            }
+        }
+
+        if (count($this->data['items']) == 1) {
+            return redirect()->to('/order-now/' . $this->data['category']['category_slug'] . '/' . $this->data['items'][0]['item_id']);
         }
 
         $this->data['title'] = $this->data['category']['category_name'];
