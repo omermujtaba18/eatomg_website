@@ -11,6 +11,7 @@ use App\Models\ItemAddonModel;
 use App\Models\ModifierModel;
 use App\Models\OrderModel;
 use App\Models\AddOnGroupModel;
+use App\Models\BusinessModel;
 use App\Models\ModifierGroupModel;
 use App\Models\OrderItemModel;
 use App\Models\OrderItemModifierModel;
@@ -100,22 +101,25 @@ class Order extends Controller
         $this->order_item_addon = new OrderItemAddonModel();
         $this->promotion = new PromotionModel();
         $this->restaurant = new RestaurantModel();
+        $this->business = new BusinessModel();
         $this->restaurant_time = new RestaurantTimeModel();
         $this->session = session();
+        $this->data = [];
+        $this->data['business'] =  $this->business->where(['business_id' => getenv('BUSINESS_ID')])->first();
     }
 
     // Route: /order-now , /order-now/category
     public function index($category_slug = NULL)
     {
         $day = date("l");
-        $data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
+        $this->data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
 
         $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
 
         if ($time['is_closed']) {
-            $data['close'] = true;
+            $this->data['close'] = true;
         } else if ($time['is_24h_open']) {
-            $data['close'] = false;
+            $this->data['close'] = false;
         } else {
             $startTime = DateTime::createFromFormat('H:i:s', $time['start_time']);
             $startTime = $startTime->format('H:i:s');
@@ -127,36 +131,36 @@ class Order extends Controller
             $currentTime = $currentTime->format('H:i:s');
 
             if (!($currentTime >= $startTime && $currentTime <= $endTime)) {
-                $data['close'] = true;
+                $this->data['close'] = true;
             } else {
-                $data['close'] = false;
+                $this->data['close'] = false;
             }
         }
 
         /* Header Data: Total Orders, Header Type, Customer ID(if login),  */
-        $data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
-        $data['header'] = "header-layout2";
-        $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
-        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+        $this->data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
+        $this->data['header'] = "header-layout2";
+        $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
+        $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         /* List of all categories */
-        $data["categories"] = $this->categories;
+        $this->data["categories"] = $this->categories;
 
         /* First Category, if category_slug is not set */
-        $data['category'] = $this->category->where('rest_id', getEnv('REST_ID'))->first();
-        $data['items'] = $this->item->where(['category_id' => $data['category']['category_id']])->findAll();
+        $this->data['category'] = $this->category->where('rest_id', getEnv('REST_ID'))->first();
+        $this->data['items'] = $this->item->where(['category_id' => $this->data['category']['category_id']])->findAll();
 
         /* Check if category slug is set, and return that category items*/
         if (isset($category_slug)) {
-            $data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->findAll()[0];
-            $data['items'] = $this->item->where(["category_id" => $data['category']['category_id']])->findAll();
+            $this->data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->findAll()[0];
+            $this->data['items'] = $this->item->where(["category_id" => $this->data['category']['category_id']])->findAll();
         }
 
-        $data['title'] = $data['category']['category_name'];
-        $data['content'] = view('order/item_list', $data);
-        echo view('templates/header', $data);
-        echo view('order/order', $data);
-        echo view('templates/footer', $data);
+        $this->data['title'] = $this->data['category']['category_name'];
+        $this->data['content'] = view('order/item_list', $this->data);
+        echo view('templates/header', $this->data);
+        echo view('order/order', $this->data);
+        echo view('templates/footer', $this->data);
 
         if ($this->session->has('message')) {
             $this->session->remove('message');
