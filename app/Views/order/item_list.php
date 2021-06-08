@@ -26,7 +26,7 @@
                                     <div class="col-sm-9 col-md-10 col-lg-10">
                                         <h4 class="menu__item-title"><a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>"><?= $item['item_name']; ?></a></h4>
                                         <span class="menu__item-price"><?= "$" . $item['item_price']; ?></span><br>
-                                        <span class="menu__item-desc"><?= empty($item['item_desc']) ? "-" : $item['item_desc']; ?></span>
+                                        <div class="col-11 pl-0"><span class="menu__item-desc"><?= empty($item['item_desc']) ? "-" : $item['item_desc']; ?></span></div>
                                         <a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>" class="menu__item-cart navbar__action-btn">
                                             <i class="fa fa-cart-plus fa-2x" aria-hidden="true"></i>
                                         </a>
