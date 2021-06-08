@@ -89,26 +89,15 @@ $buttonStyle = [
     <?php include("restaurant_close.php"); ?>
 
     <div class="container">
-        <?php if (isset($_SESSION['message'])) : ?>
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <?php echo ($_SESSION['message']);
-                unset($_SESSION['message']); ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        <?php endif; ?>
+
         <div class="row">
             <div class="col-sm-12 col-md-3 col-lg-3">
                 <div class="cart__shiping">
                     <h5>MENU</h5>
-                    <a class="color-theme font-weight-bolder large-font" href="/order-now/build-your-own/38">Build Your Own Plate</a>
                     <hr>
                     <?php foreach ($categories as $category) : ?>
-                        <?php if ($category['category_id'] != 1) : ?>
-                            <a href="/order-now/<?= $category['category_slug']; ?>" class="color-theme large-font <?= $title == $category['category_name'] ? 'font-weight-bolder' : '' ?>"><?= $category['category_name']; ?></a>
-                            <hr>
-                        <?php endif; ?>
+                        <a href="/order-now/<?= $category['category_slug']; ?>" class="color-theme large-font <?= $title == $category['category_name'] ? 'font-weight-bolder' : '' ?>"><?= $category['category_name']; ?></a>
+                        <hr>
                     <?php endforeach; ?>
                 </div>
             </div>

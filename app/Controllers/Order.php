@@ -91,7 +91,7 @@ class Order extends Controller
         $this->order = new OrderModel();
         $this->customer = new CustomerModel();
         $this->addon = new AddOnModel();
-        $this->categories = $this->category->where(['rest_id' => getEnv('REST_ID'), 'is_show' => 1])->orderBy('priority', 'asc')->findAll();
+        $this->categories = $this->category->where(['rest_id' => getEnv('REST_ID')])->orderBy('priority', 'asc')->findAll();
         $this->itemmodifier = new ItemModifierModel();
         $this->itemAddon = new ItemAddonModel();
         $this->modifierGroup = new ModifierGroupModel();
@@ -155,6 +155,9 @@ class Order extends Controller
         if (isset($category_slug)) {
             $this->data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->findAll()[0];
             $this->data['items'] = $this->item->where(["category_id" => $this->data['category']['category_id']])->findAll();
+            if (count($this->data['items']) == 1) {
+                return redirect()->to('/order-now/' . $category_slug . '/' . $this->data['items'][0]['item_id']);
+            }
         }
 
         $this->data['title'] = $this->data['category']['category_name'];
