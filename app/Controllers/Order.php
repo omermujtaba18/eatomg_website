@@ -172,12 +172,14 @@ class Order extends Controller
     public function item_by_id($category_slug = NULL, $item_id = NULL)
     {
         $day = date("l");
-        $data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
+        $this->data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
 
         $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
 
-        if ($time['start_time'] == '00:00:00' && $time['end_time'] == '00:00:00') {
-            $data['close'] = true;
+        if ($time['is_closed']) {
+            $this->data['close'] = true;
+        } else if ($time['is_24h_open']) {
+            $this->data['close'] = false;
         } else {
             $startTime = DateTime::createFromFormat('H:i:s', $time['start_time']);
             $startTime = $startTime->format('H:i:s');
@@ -189,7 +191,9 @@ class Order extends Controller
             $currentTime = $currentTime->format('H:i:s');
 
             if (!($currentTime >= $startTime && $currentTime <= $endTime)) {
-                $data['close'] = true;
+                $this->data['close'] = true;
+            } else {
+                $this->data['close'] = false;
             }
         }
 
@@ -268,20 +272,20 @@ class Order extends Controller
         }
 
         /* Header Data: Total Orders, Header Type, Customer ID(if login),  */
-        $data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
-        $data['header'] = "header-layout2";
-        $data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
-        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+        $this->data['cart_total'] = $this->session->has('cart') ? count($this->session->get('cart')['items']) : 0;
+        $this->data['header'] = "header-layout2";
+        $this->data['cus_id'] = $this->session->has('cus_id') ? $this->session->cus_id : NULL;
+        $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         /* List of all categories */
-        $data["categories"] = $this->categories;
+        $this->data["categories"] = $this->categories;
 
         /* Search category by slug and return all items */
-        $data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->first();
-        $data['title'] = $data['category']['category_name'];
+        $this->data['category'] = $this->category->where(['category_slug' => $category_slug, 'rest_id' => getEnv('REST_ID')])->first();
+        $this->data['title'] = $this->data['category']['category_name'];
 
         /* Get item by item_id */
-        $data['item'] =  $this->item->find($item_id);
+        $this->data['item'] =  $this->item->find($item_id);
 
         /* Get all modifiers attached to the item */
         $item_modifier = $this->itemmodifier->where('item_id', $item_id)->findAll();
@@ -291,21 +295,21 @@ class Order extends Controller
 
         /* If modifier is attached to the item */
         if (!empty($item_modifier)) {
-            $data['item_modifier'] = $item_modifier;
-            $data['modifierGroup'] = $this->modifierGroup;
-            $data['modifier'] = $this->modifier;
+            $this->data['item_modifier'] = $item_modifier;
+            $this->data['modifierGroup'] = $this->modifierGroup;
+            $this->data['modifier'] = $this->modifier;
         }
         /* If addon is attached to the item */
         if (!empty($item_addon)) {
-            $data['item_addon'] = $item_addon;
-            $data['addonGroup'] = $this->addonGroup;
-            $data['addon'] = $this->addon;
+            $this->data['item_addon'] = $item_addon;
+            $this->data['addonGroup'] = $this->addonGroup;
+            $this->data['addon'] = $this->addon;
         }
 
-        $data['content'] = view('order/item', $data);
-        echo view('templates/header', $data);
-        echo view('order/order', $data);
-        echo view('templates/footer', $data);
+        $this->data['content'] = view('order/item', $this->data);
+        echo view('templates/header', $this->data);
+        echo view('order/order', $this->data);
+        echo view('templates/footer', $this->data);
     }
 
     public function add_to_cart($item, $quantity, $instruct, $free, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
@@ -402,23 +406,23 @@ class Order extends Controller
         }
 
 
-        $data['header'] = "header-layout2";
-        $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
-        $data['title'] = 'Checkout';
-        $data['cart'] = $this->session->get('cart');
-        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+        $this->data['header'] = "header-layout2";
+        $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
+        $this->data['title'] = 'Checkout';
+        $this->data['cart'] = $this->session->get('cart');
+        $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         $this->session->has('show_push') ? $this->session->set('show_push', 0) : $this->session->set('show_push', 1);
 
-        $data['show_push'] = $this->session->show_push;
+        $this->data['show_push'] = $this->session->show_push;
 
-        $data['items'] = $this->item->where(['rest_id' => getEnv('REST_ID'), 'push_item' => 1])->findAll();
-        $data['category'] = $this->category->where(['rest_id' => getEnv('REST_ID'), 'category_id' => $data['items'][0]['category_id']])->first();
+        $this->data['items'] = $this->item->where(['rest_id' => getEnv('REST_ID'), 'push_item' => 1])->findAll();
+        $this->data['category'] = $this->category->where(['rest_id' => getEnv('REST_ID'), 'category_id' => $this->data['items'][0]['category_id']])->first();
 
 
-        echo view('templates/header', $data);
-        echo view('order/checkout', $data);
-        echo view('templates/footer', $data);
+        echo view('templates/header', $this->data);
+        echo view('order/checkout', $this->data);
+        echo view('templates/footer', $this->data);
     }
 
 
@@ -495,31 +499,31 @@ class Order extends Controller
             return redirect()->to('/checkout/confirmation');
         }
 
-        $data['header'] = "header-layout2";
-        $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
-        $data['title'] = 'Payment';
-        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+        $this->data['header'] = "header-layout2";
+        $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
+        $this->data['title'] = 'Payment';
+        $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
-        $data['discount'] = !empty($this->session->get('cart')['cart_discount']) ? $this->session->get('cart')['cart_discount'] : 0;
-        $data['subtotal'] = $this->session->get('cart')['cart_subtotal'];
-        $data['tax'] = $this->session->get('cart')['cart_tax'];
-        $data['total'] = $this->session->get('cart')['cart_total'];
+        $this->data['discount'] = !empty($this->session->get('cart')['cart_discount']) ? $this->session->get('cart')['cart_discount'] : 0;
+        $this->data['subtotal'] = $this->session->get('cart')['cart_subtotal'];
+        $this->data['tax'] = $this->session->get('cart')['cart_tax'];
+        $this->data['total'] = $this->session->get('cart')['cart_total'];
 
         \Stripe\Stripe::setApiKey(getEnv('STRIPE_SECRET_KEY'));
 
-        $data['intent'] = \Stripe\PaymentIntent::create([
+        $this->data['intent'] = \Stripe\PaymentIntent::create([
             'payment_method_types' => ['card'],
-            'amount' => $data['total'] * 100,
+            'amount' => $this->data['total'] * 100,
             'currency' => 'usd',
-            'application_fee_amount' => (round($data['total'] * 0.029 + 0.8, 2)) * 100,
+            'application_fee_amount' => (round($this->data['total'] * 0.029 + 0.8, 2)) * 100,
             'transfer_data' => [
                 'destination' => getEnv('STRIPE_REST_KEY'),
             ]
         ]);
 
-        echo view('templates/header', $data);
-        echo view('order/payment', $data);
-        echo view('templates/footer', $data);
+        echo view('templates/header', $this->data);
+        echo view('order/payment', $this->data);
+        echo view('templates/footer', $this->data);
     }
 
     // Route: /checkout/confirmation
@@ -527,36 +531,36 @@ class Order extends Controller
     {
         if ($this->session->has('order_id')) {
             $id = $this->session->get('order_id');
-            $data['order'] = $this->order->find($id);
-            $data['rest'] = $this->restaurant->find($data['order']['rest_id']);
-            $data['customer'] = $this->customer->find($data['order']['cus_id']);
-            $data['cart'] = $this->session->get('cart');
-            $this->send_email_restaurant($id, $data);
-            $this->send_email_customer($id, $data);
+            $this->data['order'] = $this->order->find($id);
+            $this->data['rest'] = $this->restaurant->find($this->data['order']['rest_id']);
+            $this->data['customer'] = $this->customer->find($this->data['order']['cus_id']);
+            $this->data['cart'] = $this->session->get('cart');
+            $this->send_email_restaurant($id, $this->data);
+            $this->send_email_customer($id, $this->data);
             $this->session->remove('cart');
         }
-        $data['header'] = "header-layout2";
-        $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
-        $data['title'] = 'Payment';
-        $data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
+        $this->data['header'] = "header-layout2";
+        $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
+        $this->data['title'] = 'Payment';
+        $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
-        echo view('templates/header', $data);
-        echo view('order/confirmation', $data);
-        echo view('templates/footer', $data);
+        echo view('templates/header', $this->data);
+        echo view('order/confirmation', $this->data);
+        echo view('templates/footer', $this->data);
     }
 
     // Route: /select-restauarant
     public function select_restauarant()
     {
         /* Header Data: Total Orders, Header Type, Customer ID(if login),  */
-        $data['header'] = "header-layout2";
-        $data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
-        $data['title'] = '';
-        $data['restaurant'] = $this->restaurant->findAll();
+        $this->data['header'] = "header-layout2";
+        $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
+        $this->data['title'] = '';
+        $this->data['restaurant'] = $this->restaurant->findAll();
 
-        echo view('templates/header', $data);
-        echo view('order/order_type', $data);
-        echo view('templates/footer', $data);
+        echo view('templates/header', $this->data);
+        echo view('order/order_type', $this->data);
+        echo view('templates/footer', $this->data);
     }
 
     // Route: /empty_cart
