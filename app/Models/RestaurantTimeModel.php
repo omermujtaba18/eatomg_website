@@ -14,5 +14,7 @@ class RestaurantTimeModel extends Model
         'day',
         'start_time',
         'end_time',
+        'is_closed',
+        'is_24h_open'
     ];
 }

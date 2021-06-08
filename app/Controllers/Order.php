@@ -112,8 +112,10 @@ class Order extends Controller
 
         $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
 
-        if ($time['start_time'] == '00:00:00' && $time['end_time'] == '00:00:00') {
+        if ($time['is_closed']) {
             $data['close'] = true;
+        } else if ($time['is_24h_open']) {
+            $data['close'] = false;
         } else {
             $startTime = DateTime::createFromFormat('H:i:s', $time['start_time']);
             $startTime = $startTime->format('H:i:s');
@@ -126,6 +128,8 @@ class Order extends Controller
 
             if (!($currentTime >= $startTime && $currentTime <= $endTime)) {
                 $data['close'] = true;
+            } else {
+                $data['close'] = false;
             }
         }
 
@@ -157,37 +161,6 @@ class Order extends Controller
         if ($this->session->has('message')) {
             $this->session->remove('message');
         }
-    }
-
-    public function add_to_cart($item, $quantity, $instruct, $free, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
-    {
-        if (!$this->session->has('cart')) {
-            $cart['items'] = [];
-            $this->session->set('cart', $cart);
-        }
-
-        $cart = $this->session->get('cart');
-        $cart_item['item_id'] = $item['item_id'];
-        $cart_item['item_name'] = $item['item_name'];
-        $cart_item['item_price'] = $free ? 0 : $item['item_price'] + $modifier_price + $addon_price;
-        $cart_item['item_total'] = $free ? 0 : $quantity * ($cart_item['item_price']);
-        $cart_item['item_quantity'] = $free ? 1 : intval($quantity);
-        $cart_item['item_instruct'] = $instruct;
-        $cart_item['modifier'] = $modifier;
-        $cart_item['addon'] = $addon;
-
-        array_push($cart['items'], $cart_item);
-        $this->session->set('cart', $cart);
-    }
-
-    public function remove_from_cart($id)
-    {
-        $cart = $this->session->get('cart');
-        $cart_item = $cart['items'];
-        unset($cart_item[$id]);
-        $cart['items'] = $cart_item;
-        $this->session->set('cart', $cart);
-        return redirect()->to('/cart');
     }
 
     // Route: order-now/category_slug/item_id
@@ -328,6 +301,37 @@ class Order extends Controller
         echo view('templates/header', $data);
         echo view('order/order', $data);
         echo view('templates/footer', $data);
+    }
+
+    public function add_to_cart($item, $quantity, $instruct, $free, $modifier = [], $modifier_price = 0, $addon = [], $addon_price = 0)
+    {
+        if (!$this->session->has('cart')) {
+            $cart['items'] = [];
+            $this->session->set('cart', $cart);
+        }
+
+        $cart = $this->session->get('cart');
+        $cart_item['item_id'] = $item['item_id'];
+        $cart_item['item_name'] = $item['item_name'];
+        $cart_item['item_price'] = $free ? 0 : $item['item_price'] + $modifier_price + $addon_price;
+        $cart_item['item_total'] = $free ? 0 : $quantity * ($cart_item['item_price']);
+        $cart_item['item_quantity'] = $free ? 1 : intval($quantity);
+        $cart_item['item_instruct'] = $instruct;
+        $cart_item['modifier'] = $modifier;
+        $cart_item['addon'] = $addon;
+
+        array_push($cart['items'], $cart_item);
+        $this->session->set('cart', $cart);
+    }
+
+    public function remove_from_cart($id)
+    {
+        $cart = $this->session->get('cart');
+        $cart_item = $cart['items'];
+        unset($cart_item[$id]);
+        $cart['items'] = $cart_item;
+        $this->session->set('cart', $cart);
+        return redirect()->to('/cart');
     }
 
     // Route /cart
