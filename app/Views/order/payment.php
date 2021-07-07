@@ -75,6 +75,13 @@
                     <h5 class="mb-2 mt-3">Payment Information</h5>
                     <hr>
                     <div class="row">
+                        <div class="col alert alert-warning">
+                            <h6 class="alert-heading mb-2">This is a test site!</h6>
+                            <p class="mb-1">Use following credit card details:</p>
+                            <p class="mb-0">Credit Card Number: 4242 4242 4242 4242</p>
+                            <p class="mb-0">Expirt Date: 11/23</p>
+                            <p class="mb-0">CVV: 123</p>
+                        </div>
                         <div class="col-md-10 alert alert-danger" id="error" style="display: none">
                         </div>
                         <div class="cell paycard card-stripe" id="example-3" style="width:100%">
@@ -101,10 +108,10 @@
                             </form>
                         </div>
 
-                        <div class="col-8 mx-auto">
+                        <!-- <div class="col-8 mx-auto">
                             <h5 class="mt-4 text-center col-12">OR</h5>
                             <div id="paypal-button-container"></div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -128,4 +135,4 @@
     </div>
 </section>
 
-<script id="checkout" secret="<?= $intent->client_secret; ?>" src="/js/checkout.js"></script>
+<script id="checkout" secret="<?= $intent->client_secret; ?>" publish-key="<?= getEnv('CI_ENVIRONMENT') == 'development' ? getEnv('STRIPE_PUBLISH_KEY_DEV') : getEnv('STRIPE_PUBLISH_KEY'); ?>" src="/js/checkout.js"></script>

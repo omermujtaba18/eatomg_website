@@ -1,7 +1,3 @@
-
-
-
-
 <footer id="footer" class="footer footer-layout1 text-center bg-dark">
     <div class="footer-inner">
         <div class="footer-bottom">
@@ -12,12 +8,12 @@
                     </div>
                 </div><!-- /.row -->
             </div><!-- /.container -->
-           
+
         </div><!-- /.Footer-bottom -->
     </div><!-- /.Footer-inner -->
 </footer><!-- /.Footer -->
 <button id="scrollTopBtn"><i class="fa fa-angle-up"></i></button>
-<a href="/cart"><button id="checkoutBtn">Checkout <?= "(". $cart_total . ")"; ?></button></a>
+<a href="/cart"><button id="checkoutBtn">Checkout <?= "(" . (isset($cart_total) === true ? $cart_total : "") . ")"; ?></button></a>
 
 </div>
 <!-- /.wrapper -->
