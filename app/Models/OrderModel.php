@@ -32,7 +32,8 @@ class OrderModel extends Model
         'rest_id',
         'is_complete',
         'order_payment_type',
-        'payment_id'
+        'payment_id',
+        'business_id'
     ];
 
     var $restaurant, $order_item, $order_item_modifier, $order_item_addon = null;
@@ -64,7 +65,8 @@ class OrderModel extends Model
             'order_instruct' => $cart['instruct'],
             'rest_id' => getEnv('REST_ID'),
             'order_payment_type' => $payment_method,
-            'payment_id' => $payment_id
+            'payment_id' => $payment_id,
+            'business_id' => getEnv('BUSINESS_ID')
         ];
         $order_id = $this->insert($order_data);
 
