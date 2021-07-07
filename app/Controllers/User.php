@@ -41,8 +41,8 @@ class User extends Controller
                     'cus_email' => $this->request->getPost('email'),
                     'cus_password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
                     'has_register' => 1,
-                    'business_id' => getenv('BUSINESS_ID'),
-                    'rest_id' => getenv('REST_ID')
+                    'business_id' => getEnv('BUSINESS_ID'),
+                    'rest_id' => getEnv('REST_ID')
                 ]);
                 $customer = $this->customer->find($cus_id);
                 unset($customer['cus_password']);

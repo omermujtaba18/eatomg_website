@@ -105,7 +105,7 @@ class Order extends Controller
         $this->restaurant_time = new RestaurantTimeModel();
         $this->session = session();
         $this->data = [];
-        $this->data['business'] =  $this->business->where(['business_id' => getenv('BUSINESS_ID')])->first();
+        $this->data['business'] =  $this->business->where(['business_id' => getEnv('BUSINESS_ID')])->first();
         $this->data['restaurants'] =  $this->restaurant->where(['business_id' => getEnv('BUSINESS_ID')])->orderBy('priority', 'asc')->findAll();
     }
 
@@ -113,9 +113,9 @@ class Order extends Controller
     public function index($category_slug = NULL)
     {
         $day = date("l");
-        $this->data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
+        $this->data['times'] = $this->restaurant_time->where(['rest_id' => getEnv('REST_ID')])->findAll();
 
-        $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
+        $time = $this->restaurant_time->where(['rest_id' => getEnv('REST_ID'), 'day' => $day])->first();
 
         if ($time['is_closed']) {
             $this->data['close'] = true;
@@ -176,9 +176,9 @@ class Order extends Controller
     public function item_by_id($category_slug = NULL, $item_id = NULL)
     {
         $day = date("l");
-        $this->data['times'] = $this->restaurant_time->where(['rest_id' => getenv('REST_ID')])->findAll();
+        $this->data['times'] = $this->restaurant_time->where(['rest_id' => getEnv('REST_ID')])->findAll();
 
-        $time = $this->restaurant_time->where(['rest_id' => getenv('REST_ID'), 'day' => $day])->first();
+        $time = $this->restaurant_time->where(['rest_id' => getEnv('REST_ID'), 'day' => $day])->first();
 
         if ($time['is_closed']) {
             $this->data['close'] = true;

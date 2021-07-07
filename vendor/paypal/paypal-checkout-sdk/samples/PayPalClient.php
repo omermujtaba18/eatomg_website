@@ -28,8 +28,8 @@ class PayPalClient
      */
     public static function environment()
     {
-        $clientId = getenv("CLIENT_ID") ?: "ATE4yA5JUr6WkY0Q84F_naz0Q5JK0YOZgsO_B6cchIvoXmHNW3MKjc8TXeJ2kjVzmtdeZDJP1E391oAS";
-        $clientSecret = getenv("CLIENT_SECRET") ?: "EEL5i4d2tA9MS9qi0Xz6Xo8F3YyeKnzTW6qDjFgxSp9QbJduqjwfH6WBkOesHMEzCt0JO4sCwJ7HOYoz";
+        $clientId = getEnv("CLIENT_ID") ?: "ATE4yA5JUr6WkY0Q84F_naz0Q5JK0YOZgsO_B6cchIvoXmHNW3MKjc8TXeJ2kjVzmtdeZDJP1E391oAS";
+        $clientSecret = getEnv("CLIENT_SECRET") ?: "EEL5i4d2tA9MS9qi0Xz6Xo8F3YyeKnzTW6qDjFgxSp9QbJduqjwfH6WBkOesHMEzCt0JO4sCwJ7HOYoz";
         return new SandboxEnvironment($clientId, $clientSecret);
     }
 }
