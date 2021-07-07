@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="description" content="<?= $restaurant['rest_description']; ?>">
-    <link href="<?= $restaurant['logo']; ?>" rel="icon">
+    <link href="<?= $business['business_logo']; ?>" rel="icon">
     <title><?= $restaurant['rest_name']; ?></title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:400,500,700%7cShadows+Into+Light&display=swap">
     <link rel="stylesheet" href="/css/libraries.css" />
@@ -25,7 +25,7 @@
             <nav class="navbar navbar-expand-lg">
                 <div class="container">
                     <a class="navbar-brand" href="<?= $restaurant['url']; ?>">
-                        <img src="<?= $restaurant['logo']; ?>" class="logo-dark" alt="logo">
+                        <img src="<?= $business['business_logo']; ?>" class="logo-dark" alt="logo">
                     </a>
                     <button class="navbar-toggler" type="button">
                         <span class="menu-lines"><span></span></span>
