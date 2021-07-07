@@ -21,7 +21,7 @@
                             <div class="menu-item">
                                 <div class="row">
                                     <div class="col-sm-3 col-md-2 col-lg-2 mb-2">
-                                        <img width="100" height="100" src="<?= !empty($item['item_pic']) ? $item['item_pic'] : base_url('../images/favicon/OMG_Logo-Final_Icon-Black.png'); ?>">
+                                        <img width="100" height="100" src="<?= !empty($item['item_pic']) ? $item['item_pic'] : "https://test-admin.ninetofab.com/assets/uploads/1625655828_6ace6f85df04f6cddeea.jpg"; ?>">
                                     </div>
                                     <div class="col-sm-9 col-md-10 col-lg-10">
                                         <h4 class="menu__item-title"><a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>"><?= $item['item_name']; ?></a></h4>

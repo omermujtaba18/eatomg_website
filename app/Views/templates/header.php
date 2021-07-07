@@ -36,17 +36,16 @@
                                 <a href="<?=$business['business_website']?>" class="dropdown-toggle nav__item-link">HOME</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/founder-story" class="dropdown-toggle nav__item-link">FOUNDERS
-                                    STORY</a>
+                                <a href="#" class="dropdown-toggle nav__item-link">LINK 1</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/menu" class="dropdown-toggle nav__item-link">MENU</a>
+                                <a href="#" class="dropdown-toggle nav__item-link">LINK 2</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/gallery" class="dropdown-toggle nav__item-link">GALLERY</a>
+                                <a href="#" class="dropdown-toggle nav__item-link">LINK 3</a>
                             </li>
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/blog" class="dropdown-toggle nav__item-link">BLOG</a>
+                                <a href="#" class="dropdown-toggle nav__item-link">LINK 4</a>
                             </li>
                         </ul>
                         <div class="navbar-actions-wrap">
