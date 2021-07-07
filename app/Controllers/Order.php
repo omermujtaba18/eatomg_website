@@ -22,7 +22,7 @@ use App\Models\RestaurantTimeModel;
 use CodeIgniter\Controller;
 use CodeIgniter\I18n\Time;
 use DateTime;
-
+use Exception;
 use \PayPalCheckoutSdk\Core\PayPalHttpClient;
 use \PayPalCheckoutSdk\Core\SandboxEnvironment;
 use \PayPalCheckoutSdk\Core\ProductionEnvironment;
@@ -480,12 +480,19 @@ class Order extends Controller
         if ($this->request->getPost()) {
             $order_num = round(microtime(true) * 1000);
             $payment_id = $this->request->getPost('card') ? $this->request->getPost('card') : $this->request->getPost('paypal');
-            $cus_id = $this->request->getPost('cus_id') ? $this->request->getPost('cus_id') : $this->customer->where(['cus_email' => $this->request->getPost('email')])->first()['cus_id'];
+
+            try{
+                $cus_id = $this->request->getPost('cus_id') ? $this->request->getPost('cus_id') : $this->customer->where(['cus_email' => $this->request->getPost('email')])->first()['cus_id'];
+            }
+            catch(Exception $error){}
+
             if (empty($cus_id)) {
                 $cus_id = $this->customer->insert([
                     'cus_name' => $this->request->getPost('name'),
                     'cus_email' => $this->request->getPost('email'),
                     'cus_phone' => $this->request->getPost('phone'),
+                    'business_id' => getEnv('BUSINESS_ID'),
+                    'rest_id' => getEnv('REST_ID')
                 ]);
             }
             $cart = $this->session->cart;
@@ -513,7 +520,10 @@ class Order extends Controller
         $this->data['tax'] = $this->session->get('cart')['cart_tax'];
         $this->data['total'] = $this->session->get('cart')['cart_total'];
 
-        \Stripe\Stripe::setApiKey(getEnv('STRIPE_SECRET_KEY'));
+        $stripeSecretKey = getEnv('CI_ENVIRONMENT') == 'development' ? getEnv('STRIPE_SECRET_KEY_DEV') : getEnv('STRIPE_SECRET_KEY');
+        $stripeRestKey = getEnv('CI_ENVIRONMENT') == 'development' ? getEnv('STRIPE_REST_KEY_DEV') : getEnv('STRIPE_REST_KEY');
+
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
 
         $this->data['intent'] = \Stripe\PaymentIntent::create([
             'payment_method_types' => ['card'],
@@ -521,7 +531,7 @@ class Order extends Controller
             'currency' => 'usd',
             'application_fee_amount' => (round($this->data['total'] * 0.029 + 0.8, 2)) * 100,
             'transfer_data' => [
-                'destination' => getEnv('STRIPE_REST_KEY'),
+                'destination' => $stripeRestKey,
             ]
         ]);
 

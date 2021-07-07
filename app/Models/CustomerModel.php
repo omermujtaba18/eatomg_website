@@ -21,6 +21,8 @@ class CustomerModel extends Model
         'cus_zip',
         'cus_dob',
         'has_register',
-        'token'
+        'token',
+        'business_id',
+        'rest_id'
     ];
 }
