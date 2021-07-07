@@ -33,7 +33,7 @@
                     <div class="collapse navbar-collapse" id="mainNavigation">
                         <ul class="navbar-nav ml-auto">
                             <li class="nav__item with-dropdown">
-                                <a href="http://eatomg.com/" class="dropdown-toggle nav__item-link">HOME</a>
+                                <a href="<?=$business['business_website']?>" class="dropdown-toggle nav__item-link">HOME</a>
                             </li>
                             <li class="nav__item with-dropdown">
                                 <a href="http://eatomg.com/founder-story" class="dropdown-toggle nav__item-link">FOUNDERS
@@ -58,14 +58,14 @@
                                     <a href="/user/order-history" class="navbar__action-btn navbar__action-btn-reserve btn btn__primary">MY ACCOUNT</a>
                                 <?php endif; ?>
                                 <a href="/" class="navbar__action-btn navbar__action-btn-reserve btn btn__primary">ORDER NOW</a>
-                                <?php if ($restaurant['url_facebook']) : ?>
-                                    <a href="<?= $restaurant['url_facebook'] ?>"><i class="fa fa-facebook"></i></a>
+                                <?php if ($business['business_url_facebook']) : ?>
+                                    <a href="<?= $business['business_url_facebook'] ?>"><i class="fa fa-facebook"></i></a>
                                 <?php endif; ?>
-                                <?php if ($restaurant['url_instagram']) : ?>
-                                    <a href="<?= $restaurant['url_instagram'] ?>"><i class="fa fa-instagram"></i></a>
+                                <?php if ($business['business_url_instagram']) : ?>
+                                    <a href="<?= $business['business_url_instagram'] ?>"><i class="fa fa-instagram"></i></a>
                                 <?php endif; ?>
-                                <?php if ($restaurant['url_twitter']) : ?>
-                                    <a href="<?= $restaurant['url_twitter'] ?>"><i class="fa fa-twitter"></i></a>
+                                <?php if ($business['business_url_twitter']) : ?>
+                                    <a href="<?= $business['business_url_twitter'] ?>"><i class="fa fa-twitter"></i></a>
                                 <?php endif; ?>
 
                             </div>
