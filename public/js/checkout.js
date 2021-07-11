@@ -81,11 +81,21 @@ $("#card-form").submit(function (ev) {
   var name = document.getElementById("name");
   var email = document.getElementById("email");
   var phone = document.getElementById("phone");
+  var city = document.getElementById("city");
+  var state = document.getElementById("state");
+  var postal = document.getElementById("postal");
+  var address = document.getElementById("address");
+  var namecard = document.getElementById("namecard");
 
   if (
     !name.checkValidity() ||
     !email.checkValidity() ||
-    !phone.checkValidity()
+    !phone.checkValidity() ||
+    !city.checkValidity() ||
+    !state.checkValidity() ||
+    !postal.checkValidity() ||
+    !address.checkValidity() ||
+    !namecard.checkValidity()
   ) {
     form.reportValidity();
     form.classList.add("was-validated");
@@ -96,7 +106,21 @@ $("#card-form").submit(function (ev) {
       .confirmCardPayment($("#checkout").attr("secret"), {
         payment_method: {
           card: cardNumber,
+          billing_details: {
+            address: {
+              city: city.value,
+              country: "US",
+              line1: address.value,
+              line2: null,
+              postal_code: postal.value,
+              state: state.value,
+            },
+            email: email.value,
+            name: namecard.value,
+            phone: "+1" + phone.value,
+          },
         },
+        shipping: null
       })
       .then(function (result) {
         if (result.error) {

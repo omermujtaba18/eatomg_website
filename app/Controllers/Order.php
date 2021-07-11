@@ -570,17 +570,17 @@ class Order extends Controller
         echo view('templates/footer', $this->data);
     }
 
-    // Route: /select-restauarant
-    public function select_restauarant()
+    // Route: /terms
+    public function terms()
     {
         /* Header Data: Total Orders, Header Type, Customer ID(if login),  */
         $this->data['header'] = "header-layout2";
         $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
         $this->data['title'] = '';
-        $this->data['restaurant'] = $this->restaurant->findAll();
+        $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
         echo view('templates/header', $this->data);
-        echo view('order/order_type', $this->data);
+        echo view('templates/terms', $this->data);
         echo view('templates/footer', $this->data);
     }
 

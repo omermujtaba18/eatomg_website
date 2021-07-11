@@ -61,9 +61,63 @@
                                 </div>
                                 <div class="col-md-12">
                                     <label>Phone</label>
-                                    <input type="text" id="phone" name="phone" pattern="\d*" class="form-control" value="<?= !empty($_SESSION['cus_phone']) ? $_SESSION['cus_phone'] : '' ?>" maxlength="10" required placeholder="1231231234">
+                                    <input type="text" id="phone" name="phone" pattern="\d*" class="form-control" value="<?= !empty($_SESSION['cus_phone']) ? $_SESSION['cus_phone'] : '' ?>" maxlength="10" required>
                                     <div class="invalid-feedback" style="margin-bottom:20px">
                                         Please enter your phone number.
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 class="mb-2 mt-3">Payment Information</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                                            <label class="form-check-label" for="invalidCheck">
+                                                I have read and agreed to <a href="/terms" style="text-decoration: underline; color:#83bb43">terms</a> and <a href="/terms#refund" style="text-decoration: underline;color:#83bb43">refund policy</a>
+                                            </label>
+                                            <div class="invalid-feedback">
+                                                You must agree before submitting.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Name on Card</label>
+                                    <input type="text" id="namecard" name="namecard" class="form-control" required>
+                                    <div class="invalid-feedback" style="margin-bottom:20px">
+                                        Please enter your name on card.
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Billing Address</label>
+                                    <input type="text" id="address" name="address" class="form-control" required>
+                                    <div class="invalid-feedback" style="margin-bottom:20px">
+                                        Please enter your address.
+                                    </div>
+                                </div>
+                                <div class="row col">
+                                    <div class="col-md-4">
+                                        <label>City</label>
+                                        <input type="text" id="city" name="city" class="form-control" required>
+                                        <div class="invalid-feedback" style="margin-bottom:20px">
+                                            Please enter your city name.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>State</label>
+                                        <input type="text" id="state" name="state" class="form-control" required>
+                                        <div class="invalid-feedback" style="margin-bottom:20px">
+                                            Please enter your state name.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Postal Code</label>
+                                        <input type="text" id="postal" name="postal" class="form-control" required>
+                                        <div class="invalid-feedback" style="margin-bottom:20px">
+                                            Please enter your postal code.
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -72,16 +126,16 @@
 
                         </div>
                     </form>
-                    <h5 class="mb-2 mt-3">Payment Information</h5>
-                    <hr>
                     <div class="row">
-                        <div class="col alert alert-warning">
-                            <h6 class="alert-heading mb-2">This is a test site!</h6>
-                            <p class="mb-1">Use following credit card details:</p>
-                            <p class="mb-0">Credit Card Number: 4242 4242 4242 4242</p>
-                            <p class="mb-0">Expirt Date: 11/23</p>
-                            <p class="mb-0">CVV: 123</p>
-                        </div>
+                        <?php if (getEnv('CI_ENVIRONMENT') === 'development') : ?>
+                            <div class="col alert alert-warning">
+                                <h6 class="alert-heading mb-2">This is a test site!</h6>
+                                <p class="mb-1">Use following credit card details:</p>
+                                <p class="mb-0">Credit Card Number: 4242 4242 4242 4242</p>
+                                <p class="mb-0">Expirt Date: 11/23</p>
+                                <p class="mb-0">CVV: 123</p>
+                            </div>
+                        <?php endif; ?>
                         <div class="col-md-10 alert alert-danger" id="error" style="display: none">
                         </div>
                         <div class="cell paycard card-stripe" id="example-3" style="width:100%">

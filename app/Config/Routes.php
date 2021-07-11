@@ -41,7 +41,7 @@ $routes->get('/user/(:alpha)', 'User::$1');
 $routes->get('/user/order/(:num)', 'User::get_order/$1');
 
 //Order Routes
-// $routes->get('/select-restauarant', 'Order::select_restauarant');
+$routes->get('/terms', 'Order::terms');
 $routes->match(['get', 'post'], '/order-now/(:any)/(:num)', 'Order::item_by_id/$1/$2');
 $routes->get('/order-now', 'Order::index');
 $routes->get('/order-now/(:any)', 'Order::index/$1');
