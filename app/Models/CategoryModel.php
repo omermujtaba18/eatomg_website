@@ -14,5 +14,7 @@ class CategoryModel extends Model
         'category_desc',
         'category_slug',
         'category_type',
+        'is_show',
+        'priority'
     ];
 }
