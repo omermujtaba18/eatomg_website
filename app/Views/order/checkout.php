@@ -20,41 +20,39 @@
 
 
 <section id="ShoppinCcart" class="shop shopping-cart pb-50 pt-5">
-
-    <?php if (getEnv('SHOW_PUSH') > 0) : ?>
-        <div class="modal fade bd-example-modal-lg" id="pushModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel"><?=$business['push_title'];?></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="menu-layout1">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-12 col-lg-12">
-                                        <?php foreach ($items as $item) : ?>
-                                            <div class="menu-item">
-                                                <div class="row">
-                                                    <div class="col-sm-3 col-md-2 col-lg-2 mb-2">
-                                                        <img width="75" height="75" src="<?= !empty($item['item_pic']) ? $item['item_pic'] : base_url('../images/favicon/OMG_Logo-Final_Icon-Black.png'); ?>">
-                                                    </div>
-                                                    <div class="col-sm-9 col-md-10 col-lg-10">
-                                                        <h4 class="menu__item-title"><a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>"><?= $item['item_name']; ?></a></h4>
-                                                        <span class="menu__item-price"><?= "$" . $item['item_price']; ?></span><br>
-                                                        <span class="menu__item-desc"><?= empty($item['item_desc']) ? str_repeat('&nbsp;', 20) : $item['item_desc']; ?></span>
-                                                        <a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>" class="menu__item-cart navbar__action-btn">
-                                                            <i class="fa fa-cart-plus fa-2x" aria-hidden="true"></i>
-                                                        </a>
-                                                    </div>
+    <span id="show_push" style="display: none;"><?= getEnv('SHOW_PUSH') . $show_push; ?></span>
+    <div class="modal fade bd-example-modal-lg" id="pushModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><?= $business['push_title']; ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="menu-layout1">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
+                                    <?php foreach ($items as $item) : ?>
+                                        <div class="menu-item">
+                                            <div class="row">
+                                                <div class="col-sm-3 col-md-2 col-lg-2 mb-2">
+                                                    <img width="75" height="75" src="<?= !empty($item['item_pic']) ? $item['item_pic'] : "https://img.icons8.com/material-outlined/96/000000/image.png" ?>">
                                                 </div>
-
+                                                <div class="col-sm-9 col-md-10 col-lg-10">
+                                                    <h4 class="menu__item-title"><a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>?type=push"><?= $item['item_name']; ?></a></h4>
+                                                    <span class="menu__item-price"><?= "$" . $item['item_price']; ?></span><br>
+                                                    <span class="menu__item-desc"><?= empty($item['item_desc']) ? str_repeat('&nbsp;', 20) : $item['item_desc']; ?></span>
+                                                    <a href="/order-now/<?= $category['category_slug'] ?>/<?= $item['item_id'] ?>?type=push" class="menu__item-cart navbar__action-btn">
+                                                        <i class="fa fa-cart-plus fa-2x" aria-hidden="true"></i>
+                                                    </a>
+                                                </div>
                                             </div>
-                                        <?php endforeach; ?>
-                                    </div>
+
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
                         </div>
@@ -62,8 +60,7 @@
                 </div>
             </div>
         </div>
-    <?php endif; ?>
-
+    </div>
 
     <div class="container">
         <div class="row">
@@ -231,9 +228,11 @@
         $('#total').text('$ ' + total);
     }
     updateCartTotal();
+    let showPush = $('#show_push').html();
 
-    <?php
-    if ($show_push && getEnv('SHOW_PUSH')) { ?>
+    if (showPush === '11') {
         $('#pushModal').modal('show');
-    <?php } ?>
+    } else {
+        $('#pushModal').modal('hide');
+    }
 </script>

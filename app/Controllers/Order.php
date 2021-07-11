@@ -272,6 +272,13 @@ class Order extends Controller
             $item = $this->item->find($item_id);
             $this->add_to_cart($item, $this->request->getPost('quantity'), $this->request->getPost('instruction'), 0, $modifier_array, $modifier_price, $addon_array, $addon_price);
             $this->session->set('message', '<strong>"' . $item['item_name'] . '"<strong> added to cart.');
+
+            if($this->request->getGet('type')=='push'){
+                $this->session->set('show_push',0);
+                $this->session->remove('message');
+                return redirect()->to('/cart');
+            }
+
             return redirect()->to('/order-now/' . $category_slug);
         }
 
@@ -416,7 +423,7 @@ class Order extends Controller
         $this->data['cart'] = $this->session->get('cart');
         $this->data['restaurant'] = $this->restaurant->find(getEnv('REST_ID'));
 
-        $this->session->has('show_push') ? $this->session->set('show_push', 0) : $this->session->set('show_push', 1);
+        $this->session->has('show_push') ? '' : $this->session->set('show_push', 1);
 
         $this->data['show_push'] = $this->session->show_push;
 
@@ -551,7 +558,7 @@ class Order extends Controller
             $this->data['cart'] = $this->session->get('cart');
             $this->send_email_restaurant($id, $this->data);
             $this->send_email_customer($id, $this->data);
-            $this->session->remove('cart');
+            $this->session->remove(['cart', 'show_push']);
         }
         $this->data['header'] = "header-layout2";
         $this->data['cus_id'] = $this->session->has('cus_id') ?  $this->session->cus_id : NULL;
@@ -580,7 +587,7 @@ class Order extends Controller
     // Route: /empty_cart
     public function empty_cart()
     {
-        $this->session->remove('cart');
+        $this->session->remove(['cart','show_push']);
         return redirect()->to('/order-now');
     }
 
